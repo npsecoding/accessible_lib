@@ -1,9 +1,10 @@
 """Utility for Windows Platform"""
 
-from ctypes import windll, oledll, byref, POINTER
-from ctypes.wintypes import c_char_p, c_void_p, c_long
+from ctypes import oledll, byref, POINTER
+from ctypes.wintypes import c_char_p, c_long
 from comtypes.automation import VARIANT
 from ..scripts.constants import *
+from ..scripts.debug import *
 from ..utils.IUtil import IUtil
 
 class WinUtil(IUtil):
@@ -14,24 +15,7 @@ class WinUtil(IUtil):
         self._root = None
         self._target = None
         self._simple_elements = dict()
-        self._set_test_window()
-
-    def _set_test_window(self):
-        """Get the window for the browser"""
-        test_class = c_char_p("MozillaWindowClass")
-        self._test_window = windll.user32.FindWindowA(test_class, None)
-        print 'Test Window: %d' %self._test_window
-
-    def _get_desktop_window(self):
-        """Get the accessible object for the desktop window"""
-        desktop_window = windll.user32.GetDesktopWindow()
-        return desktop_window
-
-    def _window_from_accessible_object(self, acc_ptr):
-        """Get window of accessible object"""
-        hwnd = c_long()
-        oledll.oleacc.WindowFromAccessibleObject(acc_ptr, byref(hwnd))
-        return hwnd.value
+        self.get_root_accessible()
 
     def _accessible_object_from_window(self, hwnd):
         """Get the accessible object for window"""
@@ -61,7 +45,6 @@ class WinUtil(IUtil):
                 acc = child.value.QueryInterface(IAccessible_t)
                 acc_objs.append(acc)
             elif child.vt == VT_I4:
-                acc_objs.append(accptr)
                 self._wrap_simple_element(accptr, child.value)
         return acc_objs
 
@@ -76,29 +59,24 @@ class WinUtil(IUtil):
             self._target = node
             return
 
-        print '--------------------------'
-        print 'Accessible Object'
-        print node
-        print 'Name: %s' %node.accName(CHILDID_SELF)
-        print 'Role: %s' %node.accRole(CHILDID_SELF)
-        print '--------------------------'
+        print_accessible(node)
 
         if node in self._simple_elements:
             for childid in self._simple_elements[node]:
-                print '--------------------------'
-                print 'Simple Element'
-                print 'Owner:%s' %node
-                print 'Name: %s' %node.accName(childid)
-                print 'Role: %s' %node.accRole(childid)
-                print '--------------------------'
-
+                print_simple(node, childid)
         for child in self._accessible_children(node):
             if child not in visited:
                 visited.add(node)
                 self._traverse(child, acc_id, visited)
 
     def get_root_accessible(self):
-        self._root = self._accessible_object_from_window(self._test_window)
+        """Get the window for the browser"""
+        test_class = c_char_p("MozillaWindowClass")
+        """TODO FIX FINDING WINDOW MULTIPLE CLASSES"""
+        # test_window = windll.user32.FindWindowA(test_class, None)
+        test_window = 0xA0450
+        print 'Test Window: %d' %test_window
+        self._root = self._accessible_object_from_window(test_window)
         return self._root
 
     def get_target_accessible(self, acc_id):
@@ -106,4 +84,3 @@ class WinUtil(IUtil):
         visited.add(self._root)
         self._traverse(self._root, acc_id, visited)
         return self._target
-

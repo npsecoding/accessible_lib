@@ -2,6 +2,7 @@
 
 from accessible_lib.scripts.accessible import accessible
 
-acc_obj = accessible('MSAA', "About Mozilla")
-print(acc_obj.get_acc_name())
-print(acc_obj.get_acc_role())
+ACC_OBJ = accessible('MSAA', "About Mozilla")
+print ACC_OBJ.get_acc_name()
+print ACC_OBJ.get_acc_role()
+print ACC_OBJ.get_acc_value()

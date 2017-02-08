@@ -9,7 +9,6 @@ class MSAA(NsIAccessible):
     def __init__(self, acc_id):
         super(MSAA, self).__init__(acc_id)
         _util = util()
-        self._root = _util.get_root_accessible()
         self._target = _util.get_target_accessible(acc_id)
     def get_acc_child(self):
         """Get child accessible"""

@@ -13,6 +13,3 @@ class IUtil(object):
         """Gets the target accessible object"""
         raise NotImplementedError
 
-    def traverse_accessible(self):
-        """Helper to traverse accessible tree"""
-        """TODO"""
