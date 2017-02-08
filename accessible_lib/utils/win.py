@@ -13,6 +13,7 @@ class WinUtil(IUtil):
         super(WinUtil, self).__init__()
         self._root = None
         self._target = None
+        self._simple_elements = dict()
         self._set_test_window()
 
     def _set_test_window(self):
@@ -60,31 +61,49 @@ class WinUtil(IUtil):
                 acc = child.value.QueryInterface(IAccessible_t)
                 acc_objs.append(acc)
             elif child.vt == VT_I4:
-                """TODO"""
-                child_id = child.value
+                acc_objs.append(accptr)
+                self._wrap_simple_element(accptr, child.value)
         return acc_objs
+
+    def _wrap_simple_element(self, accptr, childid):
+        if accptr not in self._simple_elements:
+            self._simple_elements[accptr] = [childid]
+        else:
+            self._simple_elements[accptr].append(childid)
 
     def _traverse(self, node, acc_id, visited):
         if node.accName(CHILDID_SELF) == acc_id:
-            return node
+            self._target = node
+            return
+
+        print '--------------------------'
+        print 'Accessible Object'
+        print node
+        print 'Name: %s' %node.accName(CHILDID_SELF)
+        print 'Role: %s' %node.accRole(CHILDID_SELF)
+        print '--------------------------'
+
+        if node in self._simple_elements:
+            for childid in self._simple_elements[node]:
+                print '--------------------------'
+                print 'Simple Element'
+                print 'Owner:%s' %node
+                print 'Name: %s' %node.accName(childid)
+                print 'Role: %s' %node.accRole(childid)
+                print '--------------------------'
 
         for child in self._accessible_children(node):
             if child not in visited:
-                print node.accName(CHILDID_SELF)
                 visited.add(node)
-                self. _traverse(child, acc_id, visited)
+                self._traverse(child, acc_id, visited)
 
     def get_root_accessible(self):
-        if self._root != None:
-            return self._root
         self._root = self._accessible_object_from_window(self._test_window)
         return self._root
 
     def get_target_accessible(self, acc_id):
-        if self._target != None:
-            return self._target
         visited = set()
         visited.add(self._root)
-        self._target = self._traverse(self._root, acc_id, visited)
+        self._traverse(self._root, acc_id, visited)
         return self._target
 
