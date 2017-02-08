@@ -2,7 +2,7 @@
 
 class NsIAccessible(object):
     """Accessible Object Interface Definition"""
-    def __init__(self):
+    def __init__(self, acc_id):
         pass
     def get_acc_child(self):
         """Get child accessible"""
