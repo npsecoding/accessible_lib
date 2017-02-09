@@ -2,7 +2,7 @@
 
 from accessible_lib.scripts.accessible import accessible
 
-ACC_OBJ = accessible('MSAA', "About Mozilla")
+ACC_OBJ = accessible('MSAA', "Browser tabs")
 print ACC_OBJ.get_acc_name()
 print ACC_OBJ.get_acc_role()
 print ACC_OBJ.get_acc_value()
