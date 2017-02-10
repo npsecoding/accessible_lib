@@ -8,7 +8,9 @@ setup(
     author_email='npang@mozila.com',
     url='<GITHUB URL>',
     install_requires=[
-        # list your dependencies
+        # dependencies
+        'flask',
+        'marshmallow'
     ],
     tests_require=[
         # dependencies for unit testing

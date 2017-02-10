@@ -1,7 +1,8 @@
 """ Service requests for accessible objects """
 
 from flask import Flask, render_template, jsonify
-import jsonpickle
+from marshmallow import pprint
+from accessible_lib.scripts.serialize import MSAA_Schema
 from accessible_lib.scripts.accessible import accessible
 
 APP = Flask(__name__)
@@ -18,8 +19,9 @@ def retrieve_msaa_accessible(key):
     """
     Retrieve accessible through MSAA API with given ID
     """
-    msaa_json = jsonpickle.encode(accessible('MSAA', key), unpicklable=False)
-    return jsonify(msaa_json)
+    msaa_json = MSAA_Schema().dump(accessible('MSAA', key))
+    pprint(msaa_json.data, indent=2)
+    return jsonify(msaa_json.data)
 
 # @APP.route("/IA2/<key>")
 # def retrieve_ia2_accessible(key):
