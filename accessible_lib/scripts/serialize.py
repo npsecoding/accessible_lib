@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 
 class MSAA_Schema(Schema):
     class Meta:
-        # TODO Convert pointer to object for serialization
-        # parent = fields.Nested('self')
-        fields = ("name", "role", "state", "value")
+        parent = fields.Nested('self')
+        children = fields.Nested('self', many=True)
+        fields = ("name", "children", "role", "parent", "state", "value")
         exclude = ("_target", )

@@ -51,7 +51,7 @@ if __name__ == '__main__':
 # FOR TESTING
 #--------------------------------------------
 # Retrieve the corresponding Accessible Object
-# ACC_OBJ = accessible('MSAA', "Browser tabs")
+# ACC_OBJ = accessible('MSAA', "Navigation Toolbar")
 # print ACC_OBJ.get_acc_name()
 # print ACC_OBJ.get_acc_role()
 # print ACC_OBJ.get_acc_value()
