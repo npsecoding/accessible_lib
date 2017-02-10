@@ -1,14 +1,11 @@
 """MSAA"""
 
 from .NsIAccessible import NsIAccessible
-from ..scripts.util import util
 from ..scripts.constants import CHILDID_SELF
 
 class MSAA(NsIAccessible):
     """MSAA windows protocol"""
     def __init__(self, acc_id):
-        _util = util()
-        self._target = _util.get_target_accessible(acc_id)
         super(MSAA, self).__init__(acc_id)
     def get_acc_child(self):
         """Get child accessible"""
