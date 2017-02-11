@@ -1,5 +1,6 @@
 """MSAA"""
 
+from ctypes import oledll, create_string_buffer
 from .NsIAccessible import NsIAccessible
 from ..scripts.constants import CHILDID_SELF
 
@@ -39,11 +40,15 @@ class MSAA(NsIAccessible):
 
     def get_acc_parent(self):
         """Get parent accessible"""
-        return pointer_wrap(self._target.accParent)
+        parent = pointer_wrap(self._target.accParent)
+        # Only want semantic information from parent
+        del parent['children']
+        return parent
 
     def get_acc_role(self):
-        """Get computed role"""
-        return self._target.accRole(CHILDID_SELF)
+        """Get localized & computed role"""
+        dw_role = self._target.accRole(CHILDID_SELF)
+        return localized_role(dw_role)
 
     def get_acc_state(self):
         """Get computed state"""
@@ -53,6 +58,13 @@ class MSAA(NsIAccessible):
         """Get computed value"""
         return self._target.accValue(CHILDID_SELF)
 
+def localized_role(dw_role):
+    """Get localized role from role constant"""
+    cch_role_max = 50
+    lpsz_role = create_string_buffer(cch_role_max)
+    oledll.oleacc.GetRoleTextW(dw_role, lpsz_role, cch_role_max)
+    return lpsz_role.value
+
 def pointer_wrap(acc_ptr):
     """Convert pointer to object for serialization"""
     print acc_ptr
@@ -60,7 +72,6 @@ def pointer_wrap(acc_ptr):
         # Not returning parent field
         'name': acc_ptr.accName(CHILDID_SELF),
         'children': "",
-        'role': acc_ptr.accRole(CHILDID_SELF),
-        'state': acc_ptr.accState(CHILDID_SELF),
+        'role': localized_role(acc_ptr.accRole(CHILDID_SELF)),
         'value': acc_ptr.accValue(CHILDID_SELF)
     }
