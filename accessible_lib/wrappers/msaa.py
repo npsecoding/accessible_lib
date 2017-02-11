@@ -52,7 +52,8 @@ class MSAA(NsIAccessible):
 
     def get_acc_state(self):
         """Get computed state"""
-        return self._target.accState(CHILDID_SELF)
+        dw_state = self._target.accState(CHILDID_SELF)
+        return localized_state(dw_state)
 
     def get_acc_value(self):
         """Get computed value"""
@@ -65,13 +66,19 @@ def localized_role(dw_role):
     oledll.oleacc.GetRoleTextW(dw_role, lpsz_role, cch_role_max)
     return lpsz_role.value
 
+def localized_state(dw_state):
+    """Get localized state from state constant"""
+    states = []
+    # Retrieve state text
+    return states
+
 def pointer_wrap(acc_ptr):
     """Convert pointer to object for serialization"""
-    print acc_ptr
     return {
         # Not returning parent field
         'name': acc_ptr.accName(CHILDID_SELF),
         'children': "",
         'role': localized_role(acc_ptr.accRole(CHILDID_SELF)),
+        'state': localized_state(acc_ptr.accState(CHILDID_SELF)),
         'value': acc_ptr.accValue(CHILDID_SELF)
     }
