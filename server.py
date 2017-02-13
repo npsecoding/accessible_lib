@@ -28,21 +28,27 @@ def retrieve_msaa_accessible(key):
 #     """
 #     Retrieve accessible through IA2 API with given ID
 #     """
-#     jsonpickle.encode(accessible('IA2', key), unpicklable=False)
+#     ia2_json = IA2_Schema().dump(accessible('IA2', key))
+#     pprint(ia2_json.data, indent=2)
+#     return jsonify(ia2_json.data)
 
 # @APP.route("/ATK/<key>")
 # def retrieve_atk_accessible(key):
 #     """
 #     Retrieve accessible through ATK API given ID
 #     """
-#     jsonpickle.encode(accessible('ATK', key), unpicklable=False)
+#     atk_json = ATK_Schema().dump(accessible('ATK', key))
+#     pprint(atk_json.data, indent=2)
+#     return jsonify(atk_json.data)
 
 # @APP.route("/ATSPI/<key>")
 # def retrieve_atspi_accessible(key):
 #     """
 #     Retrieve accessible through ATSPI API with given ID
 #     """
-#     jsonpickle.encode(accessible('ATSPI', key), unpicklable=False)
+#     atspi_json = ATSPI_Schema().dump(accessible('ATSPI', key))
+#     pprint(atspi_json.data, indent=2)
+#     return jsonify(atspi_json.data)
 
 if __name__ == '__main__':
     APP.run()
