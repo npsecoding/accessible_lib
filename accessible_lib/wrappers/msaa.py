@@ -12,6 +12,7 @@ class MSAA(NsIAccessible):
         child_tree = {'children': ""}
         self.children = self.get_acc_children(self._target, child_tree, True)
         self.childcount = self.get_acc_child_count()
+        self.defaultaction = self.get_acc_default_action()
 
     def get_acc_children(self, acc_ptr, tree, first):
         """Get child accessible"""
@@ -37,6 +38,9 @@ class MSAA(NsIAccessible):
     def get_acc_focus(self):
         """Get focus"""
         """TODO"""
+
+    def get_acc_default_action(self):
+        return self._target.accDefaultAction(CHILDID_SELF)
 
     def get_acc_name(self):
         """Get computed name"""
@@ -93,6 +97,7 @@ def pointer_wrap(acc_ptr):
         'name': acc_ptr.accName(CHILDID_SELF),
         'childcount': acc_ptr.accChildCount,
         'children': "",
+        'defaultaction': acc_ptr.accDefaultAction(CHILDID_SELF),
         'role': localized_role(acc_ptr.accRole(CHILDID_SELF)),
         'state': localized_state(acc_ptr.accState(CHILDID_SELF)),
         'value': acc_ptr.accValue(CHILDID_SELF)
