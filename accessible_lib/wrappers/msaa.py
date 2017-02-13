@@ -11,6 +11,7 @@ class MSAA(NsIAccessible):
         self.parent = self.get_acc_parent()
         child_tree = {'children': ""}
         self.children = self.get_acc_children(self._target, child_tree, True)
+        self.childcount = self.get_acc_child_count()
 
     def get_acc_children(self, acc_ptr, tree, first):
         """Get child accessible"""
@@ -29,6 +30,9 @@ class MSAA(NsIAccessible):
                 self.get_acc_children(child_ptr, tree['children'][index], False)
 
         return tree
+
+    def get_acc_child_count(self):
+        return self._target.accChildCount
 
     def get_acc_focus(self):
         """Get focus"""
@@ -87,6 +91,7 @@ def pointer_wrap(acc_ptr):
     return {
         # Not returning parent field
         'name': acc_ptr.accName(CHILDID_SELF),
+        'childcount': acc_ptr.accChildCount,
         'children': "",
         'role': localized_role(acc_ptr.accRole(CHILDID_SELF)),
         'state': localized_state(acc_ptr.accState(CHILDID_SELF)),
