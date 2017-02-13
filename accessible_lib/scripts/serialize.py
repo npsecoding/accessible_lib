@@ -8,7 +8,7 @@ class MSAA_Schema(Schema):
         parent = fields.Nested('self')
         children = fields.Nested('self', many=True)
         fields = ("name", "childcount", "children", "defaultaction",
-                  "role", "parent", "state", "value")
+                  "focused", "role", "parent", "state", "value")
         exclude = ("_target", )
 
 # TODO

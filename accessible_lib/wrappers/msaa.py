@@ -13,6 +13,7 @@ class MSAA(NsIAccessible):
         self.children = self.get_acc_children(self._target, child_tree, True)
         self.childcount = self.get_acc_child_count()
         self.defaultaction = self.get_acc_default_action()
+        self.focused = self.get_acc_focus()
 
     def get_acc_children(self, acc_ptr, tree, first):
         """Get child accessible"""
@@ -37,7 +38,12 @@ class MSAA(NsIAccessible):
 
     def get_acc_focus(self):
         """Get focus"""
-        """TODO"""
+        focused_obj = None
+        if self._target.accFocus is not None:
+            focused_obj = pointer_wrap(self._target.accFocus)
+            # Only want semantic information from focused
+            del focused_obj['children']
+        return focused_obj
 
     def get_acc_default_action(self):
         return self._target.accDefaultAction(CHILDID_SELF)
