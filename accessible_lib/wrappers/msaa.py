@@ -63,14 +63,24 @@ def localized_role(dw_role):
     """Get localized role from role constant"""
     cch_role_max = 50
     lpsz_role = create_string_buffer(cch_role_max)
-    oledll.oleacc.GetRoleTextW(dw_role, lpsz_role, cch_role_max)
+    oledll.oleacc.GetRoleTextA(dw_role, lpsz_role, cch_role_max)
     return lpsz_role.value
 
 def localized_state(dw_state):
     """Get localized state from state constant"""
     states = []
     # Retrieve state text
+    for shift in xrange(64):
+        state_bit = 1 << shift
+        if state_bit & dw_state:
+            states.append(_get_state_text(state_bit & dw_state))
     return states
+
+def _get_state_text(state_bit):
+    cch_role_max = 100
+    lpsz_state_bit = create_string_buffer(cch_role_max)
+    oledll.oleacc.GetStateTextA(state_bit, lpsz_state_bit, cch_role_max)
+    return lpsz_state_bit.value
 
 def pointer_wrap(acc_ptr):
     """Convert pointer to object for serialization"""
