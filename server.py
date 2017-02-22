@@ -1,6 +1,6 @@
 """ Service requests for accessible objects """
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, request, jsonify
 from marshmallow import pprint
 from accessible_lib.scripts.serialize import MSAA_Schema
 from accessible_lib.scripts.accessible import accessible
@@ -14,41 +14,16 @@ def api_root():
     """
     return render_template('index.html')
 
-@APP.route("/MSAA/<key>")
-def retrieve_msaa_accessible(key):
+@APP.route("/MSAA")
+def retrieve_msaa_accessible():
     """
     Retrieve accessible through MSAA API with given ID
     """
-    msaa_json = MSAA_Schema().dump(accessible('MSAA', key))
+    _id = request.args.get('id')
+    _depth = request.args.get('depth')
+    msaa_json = MSAA_Schema().dump(accessible('MSAA', _id))
     pprint(msaa_json.data, indent=2)
     return jsonify(msaa_json.data)
-
-# @APP.route("/IA2/<key>")
-# def retrieve_ia2_accessible(key):
-#     """
-#     Retrieve accessible through IA2 API with given ID
-#     """
-#     ia2_json = IA2_Schema().dump(accessible('IA2', key))
-#     pprint(ia2_json.data, indent=2)
-#     return jsonify(ia2_json.data)
-
-# @APP.route("/ATK/<key>")
-# def retrieve_atk_accessible(key):
-#     """
-#     Retrieve accessible through ATK API given ID
-#     """
-#     atk_json = ATK_Schema().dump(accessible('ATK', key))
-#     pprint(atk_json.data, indent=2)
-#     return jsonify(atk_json.data)
-
-# @APP.route("/ATSPI/<key>")
-# def retrieve_atspi_accessible(key):
-#     """
-#     Retrieve accessible through ATSPI API with given ID
-#     """
-#     atspi_json = ATSPI_Schema().dump(accessible('ATSPI', key))
-#     pprint(atspi_json.data, indent=2)
-#     return jsonify(atspi_json.data)
 
 if __name__ == '__main__':
     APP.run()
