@@ -4,11 +4,8 @@ from .NsIAccessible import NsIAccessible
 
 class ATSPI(NsIAccessible):
     """ATSPI linux protocol"""
-    def __init__(self, acc_id):
+    def __init__(self, acc_id, child_depth):
         super(ATSPI, self).__init__(acc_id)
-    def get_acc_child(self):
-        """Get child accessible"""
-        """TODO"""
     def get_acc_focus(self):
         """Get focus"""
         """TODO"""
