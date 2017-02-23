@@ -20,8 +20,8 @@ def retrieve_msaa_accessible():
     Retrieve accessible through MSAA API with given ID
     """
     _id = request.args.get('id')
-    _depth = request.args.get('depth')
-    msaa_json = MSAA_Schema().dump(accessible('MSAA', _id))
+    _depth = int(request.args.get('depth'))
+    msaa_json = MSAA_Schema().dump(accessible('MSAA', _id, _depth))
     pprint(msaa_json.data, indent=2)
     return jsonify(msaa_json.data)
 

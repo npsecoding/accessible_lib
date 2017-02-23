@@ -12,7 +12,7 @@ class NsIAccessible(object):
         self.role = self.get_acc_role()
         self.state = self.get_acc_state()
         self.value = self.get_acc_value()
-    def get_acc_children(self, acc_ptr, tree, first):
+    def get_acc_children(self, acc_ptr, tree, child_depth, first):
         """Get child accessible"""
         raise NotImplementedError
     def get_acc_focus(self):

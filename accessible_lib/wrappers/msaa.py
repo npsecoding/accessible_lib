@@ -2,24 +2,34 @@
 
 from ctypes import oledll, create_string_buffer
 from .NsIAccessible import NsIAccessible
-from ..scripts.constants import CHILDID_SELF
+from ..scripts.constants import CHILDID_SELF, FULL_CHILD_TREE
 
 class MSAA(NsIAccessible):
     """MSAA windows protocol"""
-    def __init__(self, acc_id):
+    def __init__(self, acc_id, child_depth):
         super(MSAA, self).__init__(acc_id)
         self.parent = self.get_acc_parent()
         child_tree = {'children': ""}
-        self.children = self.get_acc_children(self._target, child_tree, True)
+        self.children = self.get_acc_children(self._target, child_tree, child_depth, True)
         self.childcount = self.get_acc_child_count()
         self.defaultaction = self.get_acc_default_action()
         self.focused = self.get_acc_focus()
 
-    def get_acc_children(self, acc_ptr, tree, first):
+    def get_acc_children(self, acc_ptr, tree, child_depth, first):
         """Get child accessible"""
+        # Check if there are children
+        if acc_ptr.accChildCount is 0:
+            return
+
+        # Determine depth of children
+        if (child_depth is not FULL_CHILD_TREE) and (child_depth is 0):
+            return
+        child_depth -= 1
+
         # First is used to determine if a children field should wrap list
         parent = acc_ptr
         children_ptr = self._util._accessible_children(parent)
+
         if first:
             tree = map(pointer_wrap, children_ptr)
         else:
@@ -27,25 +37,26 @@ class MSAA(NsIAccessible):
 
         for index, child_ptr in enumerate(children_ptr):
             if first:
-                self.get_acc_children(child_ptr, tree[index], False)
+                self.get_acc_children(child_ptr, tree[index], child_depth, False)
             else:
-                self.get_acc_children(child_ptr, tree['children'][index], False)
+                self.get_acc_children(child_ptr, tree['children'][index], child_depth, False)
 
         return tree
 
     def get_acc_child_count(self):
+        """Get number of children"""
         return self._target.accChildCount
 
     def get_acc_focus(self):
         """Get focus"""
         focused_obj = None
         if self._target.accFocus is not None:
-            focused_obj = pointer_wrap(self._target.accFocus)
             # Only want semantic information from focused
-            del focused_obj['children']
+            focused_obj = pointer_wrap(self._target.accFocus)
         return focused_obj
 
     def get_acc_default_action(self):
+        """Get default action associated with accessible"""
         return self._target.accDefaultAction(CHILDID_SELF)
 
     def get_acc_name(self):
@@ -54,9 +65,8 @@ class MSAA(NsIAccessible):
 
     def get_acc_parent(self):
         """Get parent accessible"""
-        parent = pointer_wrap(self._target.accParent)
         # Only want semantic information from parent
-        del parent['children']
+        parent = pointer_wrap(self._target.accParent)
         return parent
 
     def get_acc_role(self):
@@ -99,10 +109,9 @@ def _get_state_text(state_bit):
 def pointer_wrap(acc_ptr):
     """Convert pointer to object for serialization"""
     return {
-        # Not returning parent field
+        # Not returning parent field or children field unless specified
         'name': acc_ptr.accName(CHILDID_SELF),
         'childcount': acc_ptr.accChildCount,
-        'children': "",
         'defaultaction': acc_ptr.accDefaultAction(CHILDID_SELF),
         'role': localized_role(acc_ptr.accRole(CHILDID_SELF)),
         'state': localized_state(acc_ptr.accState(CHILDID_SELF)),

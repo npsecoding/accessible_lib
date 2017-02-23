@@ -8,6 +8,8 @@ S_OK = 0x0
 VT_I4 = 0x3
 VT_DISPATCH = 0x9
 
+FULL_CHILD_TREE = -1
+
 IAccessible_t = IAccessible
 IID_IAccessible = IAccessible._iid_
 

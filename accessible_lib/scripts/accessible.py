@@ -5,7 +5,7 @@ from ..wrappers.atspi import ATSPI
 from ..wrappers.ia2 import IA2
 from ..wrappers.msaa import MSAA
 
-def accessible(atp, acc_id):
+def accessible(atp, acc_id, child_depth):
     """Instantiate the accessible object"""
     protocol = {
         'ATK': ATK,
@@ -13,5 +13,5 @@ def accessible(atp, acc_id):
         'IA2': IA2,
         'MSAA': MSAA
     }
-    return protocol[atp](acc_id)
+    return protocol[atp](acc_id, child_depth)
     
