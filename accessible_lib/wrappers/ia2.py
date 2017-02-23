@@ -5,7 +5,7 @@ from .NsIAccessible import NsIAccessible
 class IA2(NsIAccessible):
     """IA2 windows protocol"""
     def __init__(self, acc_id, child_depth):
-        super(IA2, self).__init__(acc_id)
+        super(IA2, self).__init__()
     def get_acc_focus(self):
         """Get focus"""
         """TODO"""

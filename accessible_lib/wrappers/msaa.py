@@ -7,7 +7,19 @@ from ..scripts.constants import CHILDID_SELF, FULL_CHILD_TREE
 class MSAA(NsIAccessible):
     """MSAA windows protocol"""
     def __init__(self, acc_id, child_depth):
-        super(MSAA, self).__init__(acc_id)
+        super(MSAA, self).__init__()
+        # Find accessible object associated with ID
+        self._target = self._util.get_target_accessible(acc_id)
+        if self._target is None:
+            self.found = False
+            self.error = "No accessible found with an id of " + acc_id
+            return
+        self.found = True
+        # IAccessible interface have name, role, state and value
+        self.name = self.get_acc_name()
+        self.role = self.get_acc_role()
+        self.state = self.get_acc_state()
+        self.value = self.get_acc_value()
         self.parent = self.get_acc_parent()
         child_tree = {'children': ""}
         self.children = self.get_acc_children(self._target, child_tree, child_depth, True)

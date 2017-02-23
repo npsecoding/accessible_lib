@@ -5,7 +5,7 @@ from .NsIAccessible import NsIAccessible
 class ATK(NsIAccessible):
     """ATK linux protocol"""
     def __init__(self, acc_id, child_depth):
-        super(ATK, self).__init__(acc_id)
+        super(ATK, self).__init__()
     def get_acc_focus(self):
         """Get focus"""
         """TODO"""
