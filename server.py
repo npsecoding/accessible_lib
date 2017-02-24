@@ -38,6 +38,7 @@ def retrieve_event():
     """
     Retrieve event associated with accessible
     """
+    # Get id and type paramaters
     _id = request.args.get('id')
     _type = request.args.get('type')
     return "EVENT"
@@ -47,11 +48,13 @@ def retrieve_command():
     """
     Execute command on accessible
     """
+     # Get id and function paramaters
     _id = request.args.get('id')
     _function = request.args.get('function')
     _value = execute_command(_id, _function)
     _field = _function.replace('acc', '')
 
+    # Display value returned from command or error
     if _value is not "error":
         return jsonify({_field : _value})
     else:
