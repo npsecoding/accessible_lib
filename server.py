@@ -56,7 +56,7 @@ def retrieve_event():
     print "Waiting for event type"
     _acc_obj = accessible('MSAA', 'Browser tabs', 0)
 
-    # EVENT_HANDLER.unregesiter_event_hook()
+    EVENT_HANDLER.unregesiter_event_hook()
 
     return jsonify({'type:': _type})
 

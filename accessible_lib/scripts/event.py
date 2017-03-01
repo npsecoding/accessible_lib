@@ -19,12 +19,13 @@ WINPROC_TYPE = WINFUNCTYPE(
 
 # Callback function
 def win_callback(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime):
-        acc_ptr = POINTER(IAccessible_t)()
-        var_child = VARIANT()
-        result = oledll.oleacc.AccessibleObjectFromEvent(
-            hwnd, idObject, idChild, byref(acc_ptr), byref(var_child))
-        if S_OK != result:
-            return
+    acc_ptr = POINTER(IAccessible_t)()
+    var_child = VARIANT()
+    result = oledll.oleacc.AccessibleObjectFromEvent(
+        hwnd, idObject, idChild, byref(acc_ptr), byref(var_child))
+    if S_OK != result:
+        return
+    if acc_ptr.accName(CHILDID_SELF):
         print "Name: " + str(acc_ptr.accName(CHILDID_SELF)).encode('ascii', 'ignore')
 
 class EventHandler(object):
