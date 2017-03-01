@@ -76,12 +76,12 @@ class WinUtil(IUtil):
             self._target = node
             return
 
-        print_accessible(node)
+        # print_accessible(node)
 
         # Traverse through simple elements of accessible object
-        if node in self._simple_elements:
-            for childid in self._simple_elements[node]:
-                print_simple(node, childid)
+        # if node in self._simple_elements:
+        #     for childid in self._simple_elements[node]:
+        #         print_simple(node, childid)
 
         # Traverse through each accessible object's children
         for child in self._accessible_children(node):
