@@ -5,8 +5,10 @@ from marshmallow import pprint
 from accessible_lib.scripts.serialize import MSAA_Schema
 from accessible_lib.scripts.accessible import accessible
 from accessible_lib.scripts.commands import execute_command
+from accessible_lib.scripts.event import EventHandler
 
 APP = Flask(__name__)
+EVENT_HANDLER = None
 
 @APP.route('/')
 def api_root():
@@ -33,6 +35,15 @@ def retrieve_msaa_accessible():
     else:
         return jsonify({'error' : _acc_obj.error}), 404
 
+@APP.route("/event_register")
+def register_event():
+    """
+    Register listener for event
+    """
+    _type = request.args.get('type')
+    EVENT_HANDLER.register_event_hook(_type)
+    return jsonify({'type:': _type})
+
 @APP.route("/event")
 def retrieve_event():
     """
@@ -41,7 +52,13 @@ def retrieve_event():
     # Get id and type paramaters
     _id = request.args.get('id')
     _type = request.args.get('type')
-    return "EVENT"
+
+    print "Waiting for event type"
+    _acc_obj = accessible('MSAA', 'Browser tabs', 0)
+
+    # EVENT_HANDLER.unregesiter_event_hook()
+
+    return jsonify({'type:': _type})
 
 @APP.route("/cmd")
 def retrieve_command():
@@ -61,6 +78,7 @@ def retrieve_command():
         return jsonify({'error' : "No command found"}), 404
 
 if __name__ == '__main__':
+    EVENT_HANDLER = EventHandler()
     APP.run()
 
 #--------------------------------------------
