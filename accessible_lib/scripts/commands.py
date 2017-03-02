@@ -7,10 +7,17 @@ def execute_command(at, acc_id, cmd):
     value = None
     try:
         acc_obj = accessible(at, acc_id)
-        value = getattr(acc_obj._target, cmd)(CHILDID_SELF)
+        value = None
+
+        not_callable = ['accChildCount', 'accFocus', 'accSelection']
+        if cmd in not_callable:
+            value = getattr(acc_obj._target, cmd)
+        else:
+            value = getattr(acc_obj._target, cmd)(CHILDID_SELF)
     except AttributeError:
-        value = "error"
+        value = "ERROR"
     return value
+
 
 
 

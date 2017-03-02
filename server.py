@@ -64,7 +64,7 @@ def retrieve_command():
     _field = _function.replace('acc', '')
 
     # Display value returned from command or error
-    if _value is not "error":
+    if _value is not "ERROR":
         return jsonify({_field : _value}), 200
     else:
         return jsonify({'ERROR' : "No Command Found"}), 404
