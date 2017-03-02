@@ -15,13 +15,13 @@ client.navigate(test_html)
 
 event_params = urllib.urlencode({'id': 'MSAA Checkbox', 'type' : 'EVENT_OBJECT_STATECHANGE'})
 event_endpoint = localhost + serverPort + "/event?%s"
-cmd_params = urllib.urlencode({'id': 'MSAA Checkbox', 'function': 'accState'})
+cmd_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'function': 'accState'})
 cmd_endpoint = localhost + serverPort + "/cmd?%s"
 accessible_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'depth': -1})
 accessible_endpoint = localhost + serverPort + "/accessible?%s"
 
 response = json.load(urllib.urlopen(accessible_endpoint % accessible_params))
-assert response['role'] == 'check box'
+assert response['Role'] == 'check box'
 print "-----------------ACCESSIBLE------------------"
 pprint(response)
 
@@ -35,4 +35,3 @@ pprint(response)
 response = json.load(urllib.urlopen(cmd_endpoint % cmd_params))
 print "-----------------CMD-----------------------"
 pprint(response)
-

@@ -57,9 +57,10 @@ def retrieve_command():
     Execute command on accessible
     """
      # Get id and function paramaters
+    _at = request.args.get('type')
     _id = request.args.get('id')
     _function = request.args.get('function')
-    _value = execute_command(_id, _function)
+    _value = execute_command(_at, _id, _function)
     _field = _function.replace('acc', '')
 
     # Display value returned from command or error
