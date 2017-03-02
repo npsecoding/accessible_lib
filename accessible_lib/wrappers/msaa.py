@@ -18,10 +18,7 @@ class MSAA(NsIAccessible):
 
     def serialize(self, child_depth):
         """Convert pointer to object for serialization"""
-        json = {}
         child_tree = {'children': ""}
-
-        prefix = "acc"
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
             'accFocus', 'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
@@ -34,29 +31,23 @@ class MSAA(NsIAccessible):
             'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
         }
 
-        for attribute in attributes:
-            field = attribute[len(prefix):]
-
-            if attribute in custom_callable.keys():
-                json[field] = custom_callable[attribute]
-            elif attribute in not_callable:
-                json[field] = getattr(self._target, attribute)
-            else:
-                json[field] = getattr(self._target, attribute)(CHILDID_SELF)
-
-        return json
+        return self.parsed_json(self._target, attributes, custom_callable, not_callable)
 
     def semantic_wrap(self, acc_ptr):
         "Wrap children and parent pointers exposing semantics"
-        json = {}
-
-        prefix = "acc"
         attributes = ['accName', 'accChildCount', 'accRole', 'accState', 'accValue']
         not_callable = ['accChildCount', 'accFocus', 'accSelection']
         custom_callable = {
             'accRole': localized_role(getattr(acc_ptr, 'accRole')(CHILDID_SELF)),
             'accState': localized_state(getattr(acc_ptr, 'accState')(CHILDID_SELF))
         }
+
+        return self.parsed_json(acc_ptr, attributes, custom_callable, not_callable)
+
+    def parsed_json(self, acc_ptr, attributes, custom_callable, not_callable):
+        "Does parsing of fields and determines call type for value"
+        json = {}
+        prefix = "acc"
 
         for attribute in attributes:
             field = attribute[len(prefix):]

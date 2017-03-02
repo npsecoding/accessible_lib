@@ -4,6 +4,7 @@ from .accessible import accessible
 from .constants import CHILDID_SELF
 
 def execute_command(at, acc_id, cmd):
+    """Execute command on accessible object and returns value"""
     value = None
     try:
         acc_obj = accessible(at, acc_id)
