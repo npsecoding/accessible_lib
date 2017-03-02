@@ -1,8 +1,7 @@
 """ Service requests for accessible objects """
 
 from flask import Flask, render_template, request, jsonify
-from marshmallow import pprint
-from accessible_lib.scripts.serialize import MSAA_Schema
+from pprint import pprint
 from accessible_lib.scripts.accessible import accessible
 from accessible_lib.scripts.commands import execute_command
 from accessible_lib.scripts.event import EventHandler, EVENT_INFO
@@ -25,13 +24,13 @@ def retrieve_accessible():
     _at = request.args.get('type')
     _id = request.args.get('id')
     _depth = int(request.args.get('depth'))
-    _acc_obj = accessible(_at, _id, _depth)
+    _acc_obj = accessible(_at, _id)
 
     # Display serialized object or error if not found
     if _acc_obj.found:
-        msaa_json = MSAA_Schema().dump(_acc_obj)
-        pprint(msaa_json.data, indent=2)
-        return jsonify(msaa_json.data), 200
+        json = _acc_obj.serialize(_depth)
+        pprint(json, indent=2)
+        return jsonify(json), 200
     else:
         return jsonify({'ERROR' : _acc_obj.error}), 404
 
