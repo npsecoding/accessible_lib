@@ -15,20 +15,24 @@ client.navigate(test_html)
 
 event_params = urllib.urlencode({'id': 'MSAA Checkbox', 'type' : 'EVENT_OBJECT_STATECHANGE'})
 event_endpoint = localhost + serverPort + "/event?%s"
-event_register_params = urllib.urlencode({'type' : 'EVENT_OBJECT_STATECHANGE'})
-event_register_endpoint = localhost + serverPort + "/event_register?%s"
+cmd_params = urllib.urlencode({'id': 'MSAA Checkbox', 'function': 'accState'})
+cmd_endpoint = localhost + serverPort + "/cmd?%s"
 accessible_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'depth': -1})
 accessible_endpoint = localhost + serverPort + "/accessible?%s"
 
 response = json.load(urllib.urlopen(accessible_endpoint % accessible_params))
 assert response['role'] == 'check box'
+print "-----------------ACCESSIBLE------------------"
 pprint(response)
 
 checkbox = client.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
 checkbox.click()
 
 response = json.load(urllib.urlopen(event_endpoint % event_params))
-print response
+print "-----------------EVENT-----------------------"
+pprint(response)
 
-
+response = json.load(urllib.urlopen(cmd_endpoint % cmd_params))
+print "-----------------CMD-----------------------"
+pprint(response)
 
