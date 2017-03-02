@@ -8,7 +8,6 @@ from accessible_lib.scripts.commands import execute_command
 from accessible_lib.scripts.event import EventHandler
 
 APP = Flask(__name__)
-EVENT_HANDLER = None
 
 @APP.route('/')
 def api_root():
@@ -35,15 +34,6 @@ def retrieve_msaa_accessible():
     else:
         return jsonify({'error' : _acc_obj.error}), 404
 
-@APP.route("/event_register")
-def register_event():
-    """
-    Register listener for event
-    """
-    _type = request.args.get('type')
-    EVENT_HANDLER.register_event_hook(_type)
-    return jsonify({'type:': _type})
-
 @APP.route("/event")
 def retrieve_event():
     """
@@ -54,9 +44,7 @@ def retrieve_event():
     _type = request.args.get('type')
 
     print "Waiting for event type"
-    _acc_obj = accessible('MSAA', 'Browser tabs', 0)
-
-    EVENT_HANDLER.unregesiter_event_hook()
+    EventHandler(_type, _id)
 
     return jsonify({'type:': _type})
 
@@ -78,7 +66,6 @@ def retrieve_command():
         return jsonify({'error' : "No command found"}), 404
 
 if __name__ == '__main__':
-    EVENT_HANDLER = EventHandler()
     APP.run()
 
 #--------------------------------------------

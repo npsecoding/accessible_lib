@@ -24,9 +24,6 @@ response = json.load(urllib.urlopen(accessible_endpoint % accessible_params))
 assert response['role'] == 'check box'
 pprint(response)
 
-response = json.load(urllib.urlopen(event_register_endpoint % event_register_params))
-print response
-
 checkbox = client.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
 checkbox.click()
 

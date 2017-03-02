@@ -1,9 +1,15 @@
 "Represent WINEVENTS"
 
-from threading import Thread, Timer
+from time import time
 from ctypes import byref, wintypes, windll, oledll, POINTER, WINFUNCTYPE
 from comtypes.automation import VARIANT
+from comtypes.client import PumpEvents
 from constants import *
+
+EVENT_INFO = {
+    'TARGET' : None,
+    'FOUND' : False
+}
 
 # Callback type
 WINPROC_TYPE = WINFUNCTYPE(
@@ -25,8 +31,12 @@ def win_callback(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, d
         hwnd, idObject, idChild, byref(acc_ptr), byref(var_child))
     if S_OK != result:
         return
-    if acc_ptr.accName(CHILDID_SELF):
-        print "Name: " + str(acc_ptr.accName(CHILDID_SELF)).encode('ascii', 'ignore')
+    acc_name = acc_ptr.accName(idChild)
+    if acc_name:
+        print acc_name
+    if acc_name == EVENT_INFO['TARGET']:
+        windll.user32.PostQuitMessage(0x0012)
+        EVENT_INFO['FOUND'] = True
 
 class EventHandler(object):
     winproc_type = WINPROC_TYPE(win_callback)
@@ -44,18 +54,28 @@ class EventHandler(object):
         )
         return hook_result
 
-    def __init__(self):
-        self.hook = None
+    def __init__(self, event_type, event_object):
+        EVENT_INFO['TARGET'] = event_object
+
+        self.hook = self.register_event_hook(event_type)
+        self.run()
 
     def register_event_hook(self, event):
         event_index = WIN_EVENT_NAMES.values().index(event)
         event_type = WIN_EVENT_NAMES.keys()[event_index]
-        self.hook = self.register_event(event_type, event_type)
+        return self.register_event(event_type, event_type)
 
     def unregesiter_event_hook(self):
         result = windll.user32.UnhookWinEvent(self.hook)
         return result
 
+    def run(self):
+        while not EVENT_INFO['FOUND']:
+            msg = wintypes.MSG()
+            lpmsg = byref(msg)
+            windll.user32.GetMessageA(lpmsg, None, 0, 0)
 
-
+        self.unregesiter_event_hook()
+        EVENT_INFO['FOUND'] = False
+        EVENT_INFO['TARGET'] = None
 
