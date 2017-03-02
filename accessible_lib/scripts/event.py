@@ -1,6 +1,5 @@
 "Represent WINEVENTS"
 
-from time import time
 from ctypes import byref, wintypes, windll, oledll, POINTER, WINFUNCTYPE
 from comtypes.automation import VARIANT
 from comtypes.client import PumpEvents
@@ -56,9 +55,10 @@ class EventHandler(object):
 
     def __init__(self, event_type, event_object):
         EVENT_INFO['TARGET'] = event_object
+        EVENT_INFO['FOUND'] = False
 
         self.hook = self.register_event_hook(event_type)
-        self.run()
+        self.get_events()
 
     def register_event_hook(self, event):
         event_index = WIN_EVENT_NAMES.values().index(event)
@@ -69,13 +69,12 @@ class EventHandler(object):
         result = windll.user32.UnhookWinEvent(self.hook)
         return result
 
-    def run(self):
-        while not EVENT_INFO['FOUND']:
-            msg = wintypes.MSG()
-            lpmsg = byref(msg)
-            windll.user32.GetMessageA(lpmsg, None, 0, 0)
+    def get_events(self):
+        timer_id = windll.user32.SetTimer(None, None, TIMEOUT, None)
+        msg = wintypes.MSG()
+        lpmsg = byref(msg)
+        windll.user32.GetMessageA(lpmsg, None, 0, 0)
+        windll.user32.KillTimer(None, timer_id)
 
         self.unregesiter_event_hook()
-        EVENT_INFO['FOUND'] = False
-        EVENT_INFO['TARGET'] = None
 

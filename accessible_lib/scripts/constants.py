@@ -2,6 +2,8 @@
 
 from comtypes.gen.Accessibility import IAccessible
 
+TIMEOUT = 10000
+
 CHILDID_SELF = 0x0
 S_OK = 0x0
 
