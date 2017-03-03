@@ -42,12 +42,13 @@ def retrieve_event():
     # Get id and type paramaters
     _id = request.args.get('id')
     _type = request.args.get('type')
+    _event = request.args.get('event')
 
-    print "Waiting for event type"
-    EventHandler(_type, _id)
+    EventHandler(_type, _event, _id)
+    EVENT_RESULT = EVENT_INFO['FOUND']
 
-    if EVENT_INFO['FOUND']:
-        return jsonify({'STATUS:': 'OK'}), 200
+    if EVENT_RESULT is not None:
+        return jsonify(EVENT_RESULT), 200
     else:
         return jsonify({'ERROR:': 'TIMEOUT'}), 404
 

@@ -13,7 +13,7 @@ client.start_session()
 test_html = localhost + filePort + "/"+ 'test_msaa_role.html'
 client.navigate(test_html)
 
-event_params = urllib.urlencode({'id': 'MSAA Checkbox', 'type' : 'EVENT_OBJECT_STATECHANGE'})
+event_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
 event_endpoint = localhost + serverPort + "/event?%s"
 cmd_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'function': 'accState'})
 cmd_endpoint = localhost + serverPort + "/cmd?%s"
