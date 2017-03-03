@@ -1,6 +1,8 @@
 """Debug module formatting prints"""
 
-from .constants import *
+from .constants import CHILDID_SELF
+
+DEBUG_ENABLED = False
 
 def print_accessible(node):
     """Print the accessible name and role"""
