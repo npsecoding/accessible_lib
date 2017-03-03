@@ -5,13 +5,11 @@ from comtypes.automation import VARIANT
 from .accessible import accessible
 from constants import *
 
-EVENT_INFO = {
-    'PLATFORM' : None,
-    'TARGET' : None,
-    'FOUND' : None
-}
-
 class EventHandler(object):
+
+    # Store information about event used between callback and handler
+    INFO = {}
+
     # Callback function
     @staticmethod
     def accessible_from_event(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, dwmsEventTime):
@@ -24,11 +22,11 @@ class EventHandler(object):
         acc_name = acc_ptr.accName(idChild)
         if acc_name:
             print acc_name
-        if acc_name == EVENT_INFO['TARGET']:
+        if acc_name == EventHandler.INFO['TARGET']:
             windll.user32.PostQuitMessage(0x0012)
-            EVENT_INFO['FOUND'] = {
+            EventHandler.INFO['FOUND'] = {
                 'child_id' : idChild,
-                'accessible' : accessible(EVENT_INFO['PLATFORM'], acc_name).serialize(0)
+                'accessible' : accessible(EventHandler.INFO['PLATFORM'], acc_name).serialize(0)
             }
 
     # Callback type
@@ -60,9 +58,11 @@ class EventHandler(object):
         return hook_result
 
     def __init__(self, platform, event_type, event_target):
-        EVENT_INFO['FOUND'] = None
-        EVENT_INFO['PLATFORM'] = platform
-        EVENT_INFO['TARGET'] = event_target
+        EventHandler.INFO = {
+            'PLATFORM' : platform,
+            'TARGET' : event_target,
+            'FOUND' : None
+        }
 
         self.hook = self.register_event_hook(event_type)
         self.listen_events()
@@ -87,4 +87,3 @@ class EventHandler(object):
         windll.user32.KillTimer(None, timer_id)
 
         self.unregesiter_event_hook()
-

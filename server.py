@@ -1,10 +1,9 @@
 """ Service requests for accessible objects """
 
 from flask import Flask, render_template, request, jsonify
-from pprint import pprint
 from accessible_lib.scripts.accessible import accessible
 from accessible_lib.scripts.commands import execute_command
-from accessible_lib.scripts.event import EventHandler, EVENT_INFO
+from accessible_lib.scripts.event import EventHandler
 
 APP = Flask(__name__)
 
@@ -29,7 +28,6 @@ def retrieve_accessible():
     # Display serialized object or error if not found
     if _acc_obj.found:
         json = _acc_obj.serialize(_depth)
-        pprint(json, indent=2)
         return jsonify(json), 200
     else:
         return jsonify({'ERROR' : _acc_obj.error}), 404
@@ -45,10 +43,10 @@ def retrieve_event():
     _event = request.args.get('event')
 
     EventHandler(_type, _event, _id)
-    EVENT_RESULT = EVENT_INFO['FOUND']
+    event_result = EventHandler.INFO['FOUND']
 
-    if EVENT_RESULT is not None:
-        return jsonify(EVENT_RESULT), 200
+    if event_result is not None:
+        return jsonify(event_result), 200
     else:
         return jsonify({'ERROR:': 'TIMEOUT'}), 404
 
