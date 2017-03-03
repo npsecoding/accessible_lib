@@ -68,17 +68,27 @@ class WinUtil(IUtil):
         else:
             self._simple_elements[accptr].append(childid)
 
-    def _traverse(self, node, acc_id, visited):
+    def _match_criteria(self, node, search_criteria):
+        for criteria in search_criteria:
+            prefix = 'acc'
+            value = getattr(node, prefix + criteria)(CHILDID_SELF)
+            if value != search_criteria[criteria]:
+                return False
+
+        return True
+
+    def _traverse(self, node, visited, search_criteria):
         """
         Traverse through accessible tree looking for node with the given ID
         """
-        if node.accName(CHILDID_SELF) == acc_id:
+
+        if self._match_criteria(node, search_criteria):
             self._target = node
             return
 
         # print_accessible(node)
 
-        # Traverse through simple elements of accessible object
+        # # Traverse through simple elements of accessible object
         # if node in self._simple_elements:
         #     for childid in self._simple_elements[node]:
         #         print_simple(node, childid)
@@ -87,7 +97,7 @@ class WinUtil(IUtil):
         for child in self._accessible_children(node):
             if child not in visited:
                 visited.add(node)
-                self._traverse(child, acc_id, visited)
+                self._traverse(child, visited, search_criteria)
 
     def _get_test_window(self):
          # Get the window for browser
@@ -117,5 +127,8 @@ class WinUtil(IUtil):
         """
         visited = set()
         visited.add(self._root)
-        self._traverse(self._root, acc_id, visited)
+        search_criteria = {
+            'Name' : acc_id
+        }
+        self._traverse(self._root, visited, search_criteria)
         return self._target
