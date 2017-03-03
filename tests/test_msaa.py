@@ -1,37 +1,44 @@
-import json, urllib
+"""Test out accessible service features"""
+
+import json
+import urllib
 from pprint import pprint
 from marionette_driver import By
 from marionette_driver.marionette import Marionette
+from www.fileserver import FileServer
 
-localhost = "http://localhost:"
-serverPort = str(5000)
-filePort = str(8000)
+# Start services
+FILE_SERVER = FileServer()
 
-client = Marionette(host='localhost', port=2828)
-client.start_session()
+SERVICE_PORT = str(5000)
+FILE_PORT = str(FILE_SERVER.port)
+HOST = "http://localhost:"
+ENDPOINT_PREFIX = HOST + SERVICE_PORT
+TEST_HTML = HOST + FILE_PORT + "/"+ 'test_msaa_role.html'
 
-test_html = localhost + filePort + "/"+ 'test_msaa_role.html'
-client.navigate(test_html)
+CLIENT = Marionette(host='localhost', port=2828)
+CLIENT.start_session()
+CLIENT.navigate(TEST_HTML)
 
-event_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
-event_endpoint = localhost + serverPort + "/event?%s"
-cmd_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'function': 'accState'})
-cmd_endpoint = localhost + serverPort + "/cmd?%s"
-accessible_params = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'depth': -1})
-accessible_endpoint = localhost + serverPort + "/accessible?%s"
+EVENT_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
+EVENT_ENDPOINT = ENDPOINT_PREFIX + "/event?%s"
+CMD_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'function': 'accState'})
+CMD_ENPOINT = ENDPOINT_PREFIX + "/cmd?%s"
+ACCESSSIBLE_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'depth': -1})
+ACCESSIBLE_ENDPOINT = ENDPOINT_PREFIX + "/accessible?%s"
 
-response = json.load(urllib.urlopen(accessible_endpoint % accessible_params))
-assert response['Role'] == 'check box'
+RESPONSE = json.load(urllib.urlopen(ACCESSIBLE_ENDPOINT % ACCESSSIBLE_PARAMS))
+assert RESPONSE['Role'] == 'check box'
 print "-----------------ACCESSIBLE------------------"
-pprint(response)
+pprint(RESPONSE)
 
-checkbox = client.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
-checkbox.click()
+CHECKBOX = CLIENT.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
+CHECKBOX.click()
 
-response = json.load(urllib.urlopen(event_endpoint % event_params))
+RESPONSE = json.load(urllib.urlopen(EVENT_ENDPOINT % EVENT_PARAMS))
 print "-----------------EVENT-----------------------"
-pprint(response)
+pprint(RESPONSE)
 
-response = json.load(urllib.urlopen(cmd_endpoint % cmd_params))
+RESPONSE = json.load(urllib.urlopen(CMD_ENPOINT % CMD_PARAMS))
 print "-----------------CMD-----------------------"
-pprint(response)
+pprint(RESPONSE)
