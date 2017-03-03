@@ -6,5 +6,5 @@ class ATK(NsIAccessible):
     """ATK linux protocol"""
     def __init__(self, acc_id):
         super(ATK, self).__init__()
-    def serialize(self):
+    def serialize(self, child_depth):
         """Convert pointer to object for serialization"""
