@@ -1,5 +1,6 @@
 """Accessibility Constants"""
 
+from comtypes import IServiceProvider
 from comtypes.gen.Accessibility import IAccessible
 from comtypes.gen.IAccessible2Lib import IAccessible2
 
@@ -13,8 +14,14 @@ VT_DISPATCH = 0x9
 
 FULL_CHILD_TREE = -1
 
+IServiceProvider_t = IServiceProvider
+IID_IServiceProvider = IServiceProvider._iid_
+
 IAccessible_t = IAccessible
 IID_IAccessible = IAccessible._iid_
+
+IAccessible2_t = IAccessible2
+IID_IAccessible2 = IAccessible2._iid_
 
 OBJID_WINDOW = 0x00000000
 OBJID_SELF = 0x00000000
