@@ -1,13 +1,13 @@
-"""MSAA"""
+"""IAccessible"""
 
 from ctypes import oledll, create_string_buffer
 from .NsIAccessible import NsIAccessible
 from ..scripts.constants import CHILDID_SELF, FULL_CHILD_TREE
 
-class MSAA(NsIAccessible):
-    """MSAA windows protocol"""
+class IAccessible(NsIAccessible):
+    """IAccessible windows interface"""
     def __init__(self, acc_id):
-        super(MSAA, self).__init__()
+        super(IAccessible, self).__init__()
         # Find accessible object associated with ID
         self._target = self._util.get_target_accessible(acc_id)
         if self._target is None:

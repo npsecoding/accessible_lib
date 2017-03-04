@@ -1,6 +1,7 @@
 """Accessibility Constants"""
 
 from comtypes.gen.Accessibility import IAccessible
+from comtypes.gen.IAccessible2Lib import IAccessible2
 
 TIMEOUT = 10000
 

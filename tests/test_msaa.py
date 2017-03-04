@@ -20,11 +20,11 @@ CLIENT = Marionette(host='localhost', port=2828)
 CLIENT.start_session()
 CLIENT.navigate(TEST_HTML)
 
-EVENT_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
+EVENT_PARAMS = urllib.urlencode({'type': 'IAccessible', 'id': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
 EVENT_ENDPOINT = ENDPOINT_PREFIX + "/event?%s"
-CMD_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'function': 'accState'})
+CMD_PARAMS = urllib.urlencode({'type': 'IAccessible', 'id': 'MSAA Checkbox', 'function': 'accState'})
 CMD_ENPOINT = ENDPOINT_PREFIX + "/cmd?%s"
-ACCESSSIBLE_PARAMS = urllib.urlencode({'type': 'MSAA', 'id': 'MSAA Checkbox', 'depth': -1})
+ACCESSSIBLE_PARAMS = urllib.urlencode({'type': 'IAccessible', 'id': 'MSAA Checkbox', 'depth': -1})
 ACCESSIBLE_ENDPOINT = ENDPOINT_PREFIX + "/accessible?%s"
 
 RESPONSE = json.load(urllib.urlopen(ACCESSIBLE_ENDPOINT % ACCESSSIBLE_PARAMS))
