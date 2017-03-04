@@ -24,9 +24,10 @@ class EventHandler(object):
             print acc_name
         if acc_name == EventHandler.INFO['TARGET']:
             windll.user32.PostQuitMessage(0x0012)
+            acc_i = EventHandler.INFO['INTERFACE']
             EventHandler.INFO['FOUND'] = {
-                'child_id' : idChild,
-                'accessible' : accessible(EventHandler.INFO['PLATFORM'], acc_name).serialize(0)
+                'Child_Id' : idChild,
+                acc_i : accessible(acc_i, acc_name).serialize(0)
             }
 
     # Callback type
@@ -59,7 +60,7 @@ class EventHandler(object):
 
     def __init__(self, platform, event_type, event_target):
         EventHandler.INFO = {
-            'PLATFORM' : platform,
+            'INTERFACE' : platform,
             'TARGET' : event_target,
             'FOUND' : None
         }

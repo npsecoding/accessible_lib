@@ -28,7 +28,7 @@ def retrieve_accessible():
     # Display serialized object or error if not found
     if _acc_obj.found:
         json = _acc_obj.serialize(_depth)
-        return jsonify(json), 200
+        return jsonify({_at : json}), 200
     else:
         return jsonify({'ERROR' : _acc_obj.error}), 404
 

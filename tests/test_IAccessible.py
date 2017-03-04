@@ -14,7 +14,7 @@ SERVICE_PORT = str(5000)
 FILE_PORT = str(FILE_SERVER.port)
 HOST = "http://localhost:"
 ENDPOINT_PREFIX = HOST + SERVICE_PORT
-TEST_HTML = HOST + FILE_PORT + "/"+ 'test_msaa_role.html'
+TEST_HTML = HOST + FILE_PORT + "/"+ 'test_IAccessible.html'
 
 CLIENT = Marionette(host='localhost', port=2828)
 CLIENT.start_session()
@@ -28,7 +28,7 @@ ACCESSSIBLE_PARAMS = urllib.urlencode({'type': 'IAccessible', 'id': 'MSAA Checkb
 ACCESSIBLE_ENDPOINT = ENDPOINT_PREFIX + "/accessible?%s"
 
 RESPONSE = json.load(urllib.urlopen(ACCESSIBLE_ENDPOINT % ACCESSSIBLE_PARAMS))
-assert RESPONSE['Role'] == 'check box'
+assert RESPONSE['IAccessible']['Role'] == 'check box'
 print "-----------------ACCESSIBLE------------------"
 pprint(RESPONSE)
 
