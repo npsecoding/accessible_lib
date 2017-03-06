@@ -20,17 +20,28 @@ def retrieve_accessible():
     Retrieve accessible through API with given ID
     """
     # Get id and depth paramaters
-    _at = request.args.get('type')
-    _id = request.args.get('id')
-    _depth = int(request.args.get('depth'))
-    _acc_obj = accessible(_at, _id)
+    _name = request.args.get('name')
+    _role = request.args.get('role')
+    _identifiers = {}
+    if _name is not None:
+        _identifiers["Name"] = _name
+    if _role is not None:
+        _identifiers["Role"] = _role
+
+    _inteface = request.args.get('interface')
+    _depth = int(request.args.get('depth')) or -1
+    _acc_obj = accessible(_inteface, _identifiers)
 
     # Display serialized object or error if not found
     if _acc_obj.found:
         json = _acc_obj.serialize(_depth)
-        return jsonify({_at : json}), 200
+        return jsonify({_inteface : json}), 200
     else:
-        return jsonify({'ERROR' : _acc_obj.error}), 404
+        error = {
+            'Message' : 'No accessible found with given parameters',
+            'Query Params': _identifiers
+            }
+        return jsonify({'ERROR': error}), 404
 
 @APP.route("/event")
 def retrieve_event():

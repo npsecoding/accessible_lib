@@ -82,8 +82,14 @@ class WinUtil(IUtil):
     def _match_criteria(self, node, search_criteria):
         for criteria in search_criteria:
             prefix = 'acc'
-            value = getattr(node, prefix + criteria)(CHILDID_SELF)
-            if value != search_criteria[criteria]:
+            prop_value = getattr(node, prefix + criteria)(CHILDID_SELF)
+            search_value = search_criteria[criteria]
+
+            # If value is a number convert from unicode to int
+            if isinstance(prop_value, int):
+                search_value = int(search_value)
+
+            if prop_value != search_value:
                 return False
 
         return True
@@ -133,14 +139,11 @@ class WinUtil(IUtil):
         self._root = self._accessible_object_from_window(test_window)
         return self._root
 
-    def get_target_accessible(self, acc_id):
+    def get_target_accessible(self, search_criteria):
         """
         Retrieve the accessible object for the given ID
         """
         visited = set()
         visited.add(self._root)
-        search_criteria = {
-            'Name' : acc_id
-        }
         self._traverse(self._root, visited, search_criteria)
         return self._target

@@ -5,7 +5,7 @@ from ..wrappers.atspi import ATSPI
 from ..wrappers.IAccessible2 import IAccessible2
 from ..wrappers.IAccessible import IAccessible
 
-def accessible(atp, acc_id):
+def accessible(interface_t, identifiers):
     """Instantiate the accessible object"""
     protocol = {
         'ATK': ATK,
@@ -13,5 +13,5 @@ def accessible(atp, acc_id):
         'IAccessible2': IAccessible2,
         'IAccessible': IAccessible
     }
-    return protocol[atp](acc_id)
+    return protocol[interface_t](identifiers)
     

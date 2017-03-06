@@ -6,15 +6,14 @@ from ..scripts.constants import CHILDID_SELF, FULL_CHILD_TREE
 
 class IAccessible(NsIAccessible):
     """IAccessible windows interface"""
-    def __init__(self, acc_id):
+    def __init__(self, identifiers):
         super(IAccessible, self).__init__()
         # Find accessible object associated with ID
-        self._target = self._util.get_target_accessible(acc_id)
+        self._target = self._util.get_target_accessible(identifiers)
         if self._target is None:
             self.found = False
-            self.error = "No accessible found with an id of " + acc_id
-            return
-        self.found = True
+        else:
+            self.found = True
 
     def serialize(self, child_depth):
         """Convert pointer to object for serialization"""
