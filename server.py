@@ -34,8 +34,8 @@ def retrieve_accessible():
 
     # Display serialized object or error if not found
     if _acc_obj.found:
-        json = _acc_obj.serialize(_depth)
-        return jsonify({_inteface : json}), 200
+        _json = _acc_obj.serialize(_depth)
+        return jsonify({_inteface : _json}), 200
     else:
         error = {
             'Message' : 'No accessible found with given parameters',

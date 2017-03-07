@@ -20,12 +20,13 @@ class IAccessible(NsIAccessible):
         child_tree = {'Children': ""}
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
-            'accFocus', 'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
+            'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
             'accName', 'accParent', 'accRole', 'accSelection', 'accState', 'accValue']
-        not_callable = ['accChildCount', 'accFocus', 'accSelection']
+        not_callable = ['accChildCount', 'accSelection']
         custom_callable = {
             'accChildren': self.get_acc_children(self._target, child_tree, child_depth, True),
-            'accParent': self.semantic_wrap(getattr(self._target, 'accParent'))
+            'accParent': self.semantic_wrap(getattr(self._target, 'accParent')),
+            'accFocus' : self.semantic_wrap(getattr(self._target, 'accFocus'))
             # Localized role and state
             # 'accRole': localized_role(getattr(self._target, 'accRole')(CHILDID_SELF)),
             # 'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
@@ -36,7 +37,7 @@ class IAccessible(NsIAccessible):
     def semantic_wrap(self, acc_ptr, child_id=CHILDID_SELF):
         "Wrap children and parent pointers exposing semantics"
         attributes = ['accName', 'accChildCount', 'accRole', 'accState', 'accValue']
-        not_callable = ['accChildCount', 'accFocus', 'accSelection']
+        not_callable = ['accChildCount', 'accSelection']
         custom_callable = {
             # Localized role and state
             # 'accRole': localized_role(getattr(acc_ptr, 'accRole')(child_id)),
