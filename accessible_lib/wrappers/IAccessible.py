@@ -20,7 +20,7 @@ class IAccessible(NsIAccessible):
         child_tree = {'Children': ""}
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
-            'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
+            'accFocus', 'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
             'accName', 'accParent', 'accRole', 'accSelection', 'accState', 'accValue']
         not_callable = ['accChildCount', 'accSelection']
         custom_callable = {
@@ -36,6 +36,13 @@ class IAccessible(NsIAccessible):
 
     def semantic_wrap(self, acc_ptr, child_id=CHILDID_SELF):
         "Wrap children and parent pointers exposing semantics"
+
+        # Handle cases when accessible object doesn't have:
+        # keyboard focus
+        # parent accessible
+        if acc_ptr is None:
+            return None
+
         attributes = ['accName', 'accChildCount', 'accRole', 'accState', 'accValue']
         not_callable = ['accChildCount', 'accSelection']
         custom_callable = {
@@ -46,12 +53,12 @@ class IAccessible(NsIAccessible):
 
         return self.parsed_json(acc_ptr, attributes, custom_callable, not_callable, child_id)
 
-    def parsed_json(self, acc_ptr, attributes, custom_callable, not_callable, child_id=CHILDID_SELF):
+    def parsed_json(self, acc_ptr, attribs, custom_callable, not_callable, child_id=CHILDID_SELF):
         "Does parsing of fields and determines call type for value"
         json = {}
         prefix = "acc"
 
-        for attribute in attributes:
+        for attribute in attribs:
             field = attribute[len(prefix):]
             if attribute in custom_callable.keys():
                 json[field] = custom_callable[attribute]
@@ -60,7 +67,7 @@ class IAccessible(NsIAccessible):
                 if field == 'ChildCount' and child_id != CHILDID_SELF:
                     json[field] = 0
                     continue
-
+                # Accessible elements have children
                 json[field] = getattr(acc_ptr, attribute)
             else:
                 try:
@@ -87,7 +94,8 @@ class IAccessible(NsIAccessible):
 
         # Check if children are simple elements
         if acc_ptr in self._util._simple_elements:
-            tree['Children'] = [self.semantic_wrap(acc_ptr, i) for i in range(1, acc_ptr.accChildCount + 1)]
+            tree['Children'] = [self.semantic_wrap(acc_ptr, i)
+                                for i in range(1, acc_ptr.accChildCount + 1)]
             return
 
         if first:
