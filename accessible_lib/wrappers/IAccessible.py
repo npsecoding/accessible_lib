@@ -15,9 +15,9 @@ class IAccessible(NsIAccessible):
         else:
             self.found = True
 
-    def serialize(self, child_depth):
+    def serialize(self, child_depth=-1):
         """Convert pointer to object for serialization"""
-        child_tree = {'children': ""}
+        child_tree = {'Children': ""}
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
             'accFocus', 'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
@@ -25,25 +25,27 @@ class IAccessible(NsIAccessible):
         not_callable = ['accChildCount', 'accFocus', 'accSelection']
         custom_callable = {
             'accChildren': self.get_acc_children(self._target, child_tree, child_depth, True),
-            'accParent': self.semantic_wrap(getattr(self._target, 'accParent')),
-            'accRole': localized_role(getattr(self._target, 'accRole')(CHILDID_SELF)),
-            'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
+            'accParent': self.semantic_wrap(getattr(self._target, 'accParent'))
+            # Localized role and state
+            # 'accRole': localized_role(getattr(self._target, 'accRole')(CHILDID_SELF)),
+            # 'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
         }
 
         return self.parsed_json(self._target, attributes, custom_callable, not_callable)
 
-    def semantic_wrap(self, acc_ptr):
+    def semantic_wrap(self, acc_ptr, child_id=CHILDID_SELF):
         "Wrap children and parent pointers exposing semantics"
         attributes = ['accName', 'accChildCount', 'accRole', 'accState', 'accValue']
         not_callable = ['accChildCount', 'accFocus', 'accSelection']
         custom_callable = {
-            'accRole': localized_role(getattr(acc_ptr, 'accRole')(CHILDID_SELF)),
-            'accState': localized_state(getattr(acc_ptr, 'accState')(CHILDID_SELF))
+            # Localized role and state
+            # 'accRole': localized_role(getattr(acc_ptr, 'accRole')(child_id)),
+            # 'accState': localized_state(getattr(acc_ptr, 'accState')(child_id))
         }
 
-        return self.parsed_json(acc_ptr, attributes, custom_callable, not_callable)
+        return self.parsed_json(acc_ptr, attributes, custom_callable, not_callable, child_id)
 
-    def parsed_json(self, acc_ptr, attributes, custom_callable, not_callable):
+    def parsed_json(self, acc_ptr, attributes, custom_callable, not_callable, child_id=CHILDID_SELF):
         "Does parsing of fields and determines call type for value"
         json = {}
         prefix = "acc"
@@ -53,9 +55,17 @@ class IAccessible(NsIAccessible):
             if attribute in custom_callable.keys():
                 json[field] = custom_callable[attribute]
             elif attribute in not_callable:
+                # Simple elements don't have children
+                if field == 'ChildCount' and child_id != CHILDID_SELF:
+                    json[field] = 0
+                    continue
+
                 json[field] = getattr(acc_ptr, attribute)
             else:
-                json[field] = getattr(acc_ptr, attribute)(CHILDID_SELF)
+                try:
+                    json[field] = getattr(acc_ptr, attribute)(child_id)
+                except:
+                    json[field] = "Attribute Not Supported"
 
         return json
 
@@ -74,16 +84,21 @@ class IAccessible(NsIAccessible):
         parent = acc_ptr
         children_ptr = self._util._accessible_children(parent)
 
+        # Check if children are simple elements
+        if acc_ptr in self._util._simple_elements:
+            tree['Children'] = [self.semantic_wrap(acc_ptr, i) for i in range(1, acc_ptr.accChildCount + 1)]
+            return
+
         if first:
             tree = map(self.semantic_wrap, children_ptr)
         else:
-            tree['children'] = map(self.semantic_wrap, children_ptr)
+            tree['Children'] = map(self.semantic_wrap, children_ptr)
 
         for index, child_ptr in enumerate(children_ptr):
             if first:
                 self.get_acc_children(child_ptr, tree[index], child_depth, False)
             else:
-                self.get_acc_children(child_ptr, tree['children'][index], child_depth, False)
+                self.get_acc_children(child_ptr, tree['Children'][index], child_depth, False)
 
         return tree
 
