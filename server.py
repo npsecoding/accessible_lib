@@ -29,7 +29,7 @@ def retrieve_accessible():
         _identifiers["Role"] = _role
 
     _inteface = request.args.get('interface')
-    _depth = int(request.args.get('depth'))
+    _depth = request.args.get('depth')
     _acc_obj = accessible(_inteface, _identifiers)
 
     # Display serialized object or error if not found

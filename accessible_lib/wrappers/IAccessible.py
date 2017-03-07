@@ -3,6 +3,7 @@
 from ctypes import oledll, create_string_buffer
 from .NsIAccessible import NsIAccessible
 from ..scripts.constants import CHILDID_SELF, FULL_CHILD_TREE
+from ..scripts.debug import DEBUG_ENABLED
 
 class IAccessible(NsIAccessible):
     """IAccessible windows interface"""
@@ -15,8 +16,17 @@ class IAccessible(NsIAccessible):
         else:
             self.found = True
 
-    def serialize(self, child_depth=-1):
-        """Convert pointer to object for serialization"""
+    def serialize(self, child_depth):
+        """
+        Serialize accessible into json
+        """
+
+        # Set child depth to full tree if none specified
+        if child_depth is None:
+            child_depth = -1
+        else:
+            child_depth = int(child_depth)
+
         child_tree = {'Children': ""}
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
@@ -31,8 +41,15 @@ class IAccessible(NsIAccessible):
             # 'accRole': localized_role(getattr(self._target, 'accRole')(CHILDID_SELF)),
             # 'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
         }
+        node = self._target
 
-        return self.parsed_json(self._target, attributes, custom_callable, not_callable)
+        # If object is simple element remove irrelevant children fields
+        if node.isSimpleElement:
+            attributes.remove('accChildren')
+            del custom_callable['accChildren']
+            return self.parsed_json(node, attributes, custom_callable, not_callable, node.childId)
+
+        return self.parsed_json(node, attributes, custom_callable, not_callable)
 
     def semantic_wrap(self, acc_ptr, child_id=CHILDID_SELF):
         "Wrap children and parent pointers exposing semantics"
@@ -58,6 +75,13 @@ class IAccessible(NsIAccessible):
         json = {}
         prefix = "acc"
 
+        # Add field to show child is simple element
+        if DEBUG_ENABLED:
+            if child_id != CHILDID_SELF:
+                json['SimpleElement'] = True
+            else:
+                json['SimpleElement'] = False
+
         for attribute in attribs:
             field = attribute[len(prefix):]
             if attribute in custom_callable.keys():
@@ -67,7 +91,7 @@ class IAccessible(NsIAccessible):
                 if field == 'ChildCount' and child_id != CHILDID_SELF:
                     json[field] = 0
                     continue
-                # Accessible elements have children
+
                 json[field] = getattr(acc_ptr, attribute)
             else:
                 try:

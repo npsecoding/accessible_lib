@@ -79,10 +79,10 @@ class WinUtil(IUtil):
         else:
             self._simple_elements[accptr].append(childid)
 
-    def _match_criteria(self, node, search_criteria):
+    def _match_criteria(self, node, search_criteria, child_id=CHILDID_SELF):
         for criteria in search_criteria:
             prefix = 'acc'
-            prop_value = getattr(node, prefix + criteria)(CHILDID_SELF)
+            prop_value = getattr(node, prefix + criteria)(child_id)
             search_value = search_criteria[criteria]
 
             # If value is a number convert from unicode to int
@@ -101,18 +101,29 @@ class WinUtil(IUtil):
 
         if self._match_criteria(node, search_criteria):
             self._target = node
+            self._target.isSimpleElement = False
             return
 
         if DEBUG_ENABLED:
             print_accessible(node)
 
-            # Traverse through simple elements of accessible object
-            if node in self._simple_elements:
-                for childid in self._simple_elements[node]:
+        # Retrieve simple children or accessible children from node
+        acc_children = self._accessible_children(node)
+
+        # Traverse through simple elements of node
+        if node in self._simple_elements:
+            for childid in self._simple_elements[node]:
+                if DEBUG_ENABLED:
                     print_simple(node, childid)
 
-        # Traverse through each accessible object's children
-        for child in self._accessible_children(node):
+                if self._match_criteria(node, search_criteria, childid):
+                    self._target = node
+                    self._target.isSimpleElement = True
+                    self._target.childId = childid
+                    return
+
+        # Traverse through accessible objects of node
+        for child in acc_children:
             if child not in visited:
                 visited.add(node)
                 self._traverse(child, visited, search_criteria)
