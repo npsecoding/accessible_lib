@@ -1,31 +1,33 @@
 """ Issue commands to accessible"""
 
 from .accessible import accessible
-from .constants import CHILDID_SELF
 
-def execute_command(interface_t, identifiers, cmd):
+def execute_command(interface_t, identifiers, cmd, params):
     """Execute command on accessible object and returns value"""
     value = None
     acc_obj = accessible(interface_t, identifiers)
     _json = acc_obj.serialize()
 
-    # Get childid for object or simple element
-    childid = CHILDID_SELF
-    if acc_obj._target.isSimpleElement:
-        childid = acc_obj._target.childId
-
     # Get accessible field from JSON
     if cmd in _json:
         value = _json[cmd]
-    # Get captalized field from JSON
-    elif str(cmd).capitalize() in _json:
-        value = _json[str(cmd).capitalize()]
     # Call accessible method
     else:
+        # Localize paramaters
+        localized_params = []
+        for param in params:
+            lparam = param.encode('UTF8')
+            if lparam.isdigit():
+                localized_params.append(int(lparam))
+            else:
+                localized_params.append(lparam)
+        params = []
+        params = localized_params
+
         try:
             prefix = 'acc'
-            value = getattr(acc_obj._target, prefix + cmd)(childid)
-        except AttributeError:
+            value = getattr(acc_obj._target, prefix + cmd)(*params)
+        except:
             value = "ERROR"
 
     return value

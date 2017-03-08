@@ -77,13 +77,24 @@ def retrieve_command():
 
     _interface = request.args.get('interface')
     _function = request.args.get('function')
-    _value = execute_command(_interface, _identifiers, _function)
+    _params = request.args.getlist('param')
+    _value = execute_command(_interface, _identifiers, _function, _params)
 
     # Display value returned from command or error
     if _value is not "ERROR":
         return jsonify({_function : _value}), 200
     else:
-        return jsonify({'ERROR' : _function + " command is invalid"}), 404
+        _query_params = {
+            'Function Params': _params,
+        }
+        _query_params.update(_identifiers)
+        error = {
+
+            'Message' : "Function couldn't be executed with given parameters",
+            'Query Params': _query_params,
+            'Function': _function
+            }
+        return jsonify({'ERROR': error}), 404
 
 if __name__ == '__main__':
     APP.run()
