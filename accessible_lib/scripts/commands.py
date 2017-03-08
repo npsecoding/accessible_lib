@@ -1,6 +1,6 @@
 """ Issue commands to accessible"""
 
-from .accessible import accessible
+from .accessible import accessible, interface_ptr_types
 
 def execute_command(interface_t, identifiers, cmd, params):
     """Execute command on accessible object and returns value"""
@@ -30,4 +30,8 @@ def execute_command(interface_t, identifiers, cmd, params):
         except:
             value = "ERROR"
 
-    return value
+    # Handles case when value is pointer by wrapping for serialization
+    if type(value) in interface_ptr_types():
+        return acc_obj.semantic_wrap(value)
+    else:
+        return value
