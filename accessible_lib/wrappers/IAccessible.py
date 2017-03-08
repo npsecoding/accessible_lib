@@ -27,7 +27,7 @@ class IAccessible(NsIAccessible):
         else:
             child_depth = int(child_depth)
 
-        child_tree = {'Children': ""}
+        child_tree = {'Children': None}
         attributes = [
             'accChildCount', 'accChildren', 'accDefaultAction', 'accDescription',
             'accFocus', 'accHelp', 'accHelpTopic', 'accKeyboardShortcut', 'accLocation',
