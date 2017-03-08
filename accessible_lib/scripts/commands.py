@@ -1,24 +1,20 @@
 """ Issue commands to accessible"""
 
 from .accessible import accessible
-from .constants import CHILDID_SELF
 
-def execute_command(at, acc_id, cmd):
+def execute_command(interface_t, identifiers, cmd):
     """Execute command on accessible object and returns value"""
     value = None
-    try:
-        acc_obj = accessible(at, acc_id)
-        value = None
+    acc_obj = accessible(interface_t, identifiers)
+    _json = acc_obj.serialize()
 
-        not_callable = ['accChildCount', 'accFocus', 'accSelection']
-        if cmd in not_callable:
-            value = getattr(acc_obj._target, cmd)
-        else:
-            value = getattr(acc_obj._target, cmd)(CHILDID_SELF)
-    except AttributeError:
+    if cmd in _json:
+        value = _json[cmd]
+    elif str(cmd).capitalize() in _json:
+        value = _json[str(cmd).capitalize()]
+    else:
         value = "ERROR"
+
     return value
-
-
 
 

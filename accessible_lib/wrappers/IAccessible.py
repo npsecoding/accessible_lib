@@ -16,7 +16,7 @@ class IAccessible(NsIAccessible):
         else:
             self.found = True
 
-    def serialize(self, child_depth):
+    def serialize(self, child_depth=-1):
         """
         Serialize accessible into json
         """

@@ -66,18 +66,24 @@ def retrieve_command():
     """
     Execute command on accessible
     """
-     # Get id and function paramaters
-    _at = request.args.get('type')
-    _id = request.args.get('id')
+    # Get id and function paramaters
+    _name = request.args.get('name')
+    _role = request.args.get('role')
+    _identifiers = {}
+    if _name is not None:
+        _identifiers["Name"] = _name
+    if _role is not None:
+        _identifiers["Role"] = _role
+
+    _interface = request.args.get('interface')
     _function = request.args.get('function')
-    _value = execute_command(_at, _id, _function)
-    _field = _function.replace('acc', '')
+    _value = execute_command(_interface, _identifiers, _function)
 
     # Display value returned from command or error
     if _value is not "ERROR":
-        return jsonify({_field : _value}), 200
+        return jsonify({_function : _value}), 200
     else:
-        return jsonify({'ERROR' : "No Command Found"}), 404
+        return jsonify({'ERROR' : _function + " command is invalid"}), 404
 
 if __name__ == '__main__':
     APP.run()
