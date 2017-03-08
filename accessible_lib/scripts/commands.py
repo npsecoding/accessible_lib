@@ -14,10 +14,13 @@ def execute_command(interface_t, identifiers, cmd):
     if acc_obj._target.isSimpleElement:
         childid = acc_obj._target.childId
 
+    # Get accessible field from JSON
     if cmd in _json:
         value = _json[cmd]
+    # Get captalized field from JSON
     elif str(cmd).capitalize() in _json:
         value = _json[str(cmd).capitalize()]
+    # Call accessible method
     else:
         try:
             prefix = 'acc'
