@@ -1,0 +1,24 @@
+from ..events.IEventHandler import IEventHandler
+
+class MacEventHandler(IEventHandler):
+    """Handle Mac Events"""
+
+    def __init__(self, interface_t, event_t, _identifiers):
+        # TODO
+        super(MacEventHandler, self).__init__()
+        raise NotImplementedError
+
+    def register_event_hook(self):
+        """Track specific event"""
+        # TODO
+        raise NotImplementedError
+
+    def unregesiter_event_hook(self):
+        """Untrack specific event"""
+        # TODO
+        raise NotImplementedError
+
+    def listen_events(self):
+        """Listen for tracked events"""
+        # TODO
+        raise NotImplementedError

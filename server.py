@@ -3,7 +3,7 @@
 from flask import Flask, render_template, request, jsonify
 from accessible_lib.scripts.accessible import accessible
 from accessible_lib.scripts.commands import execute_command
-from accessible_lib.scripts.event import EventHandler
+from accessible_lib.scripts.event import event
 
 APP = Flask(__name__)
 
@@ -48,13 +48,19 @@ def retrieve_event():
     """
     Retrieve event associated with accessible
     """
-    # Get id and type paramaters
-    _id = request.args.get('id')
-    _type = request.args.get('type')
-    _event = request.args.get('event')
+    # Get id and event paramaters
+    _name = request.args.get('name')
+    _role = request.args.get('role')
+    _identifiers = {}
+    if _name is not None:
+        _identifiers["Name"] = _name
+    if _role is not None:
+        _identifiers["Role"] = _role
 
-    EventHandler(_type, _event, _id)
-    event_result = EventHandler.INFO['FOUND']
+    _interface = request.args.get('interface')
+    _event = request.args.get('event')
+    _event_handler = event(_interface, _event, _identifiers)
+    event_result = _event_handler.info['FOUND']
 
     if event_result is not None:
         return jsonify(event_result), 200

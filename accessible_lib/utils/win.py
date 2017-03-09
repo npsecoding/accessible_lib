@@ -20,6 +20,7 @@ class WinUtil(IUtil):
         self.get_root_accessible()
 
     def IAccessible_to_IAccessible2(self, ia_ptr):
+        # TODO
         p_service = POINTER(IServiceProvider_t)()
         p_service = ia_ptr.QueryInterface(IServiceProvider_t)
 
