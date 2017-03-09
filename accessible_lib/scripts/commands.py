@@ -6,6 +6,10 @@ def execute_command(interface_t, identifiers, cmd, params):
     """Execute command on accessible object and returns value"""
     value = None
     acc_obj = accessible(interface_t, identifiers)
+    if not acc_obj.found:
+        value = "ERROR"
+        return value
+
     _json = acc_obj.serialize()
 
     # Get accessible field from JSON
