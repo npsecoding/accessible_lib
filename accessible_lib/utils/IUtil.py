@@ -9,7 +9,7 @@ class IUtil(object):
         """Gets the root accessible object"""
         raise NotImplementedError
 
-    def get_target_accessible(self, acc_id):
+    def get_target_accessible(self, search_criteria):
         """Gets the target accessible object"""
         raise NotImplementedError
 

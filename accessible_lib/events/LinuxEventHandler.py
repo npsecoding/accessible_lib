@@ -5,7 +5,7 @@ class LinuxEventHandler(IEventHandler):
 
     def __init__(self, interface_t, event_t, _identifiers):
         # TODO
-        super(LinuxEventHandler, self).__init__()
+        super(LinuxEventHandler, self).__init__(interface_t, _identifiers)
         raise NotImplementedError
 
     def register_event_hook(self):

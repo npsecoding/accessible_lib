@@ -10,5 +10,5 @@ class MacUtil(IUtil):
     def get_root_accessible(self):
         """TODO"""
 
-    def get_target_accessible(self, acc_id):
+    def get_target_accessible(self, search_criteria):
         """TODO"""

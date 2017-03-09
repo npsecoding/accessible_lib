@@ -1,9 +1,9 @@
 """Create platform utility object"""
 
 import sys
-from ..utils.win import WinUtil
-from ..utils.linux import LinuxUtil
-from ..utils.mac import MacUtil
+from ..utils.WinUtil import WinUtil
+from ..utils.LinuxUtil import LinuxUtil
+from ..utils.MacUtil import MacUtil
 
 def util():
     """Instantiate the platform utility"""
