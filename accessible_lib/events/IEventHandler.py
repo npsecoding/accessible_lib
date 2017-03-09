@@ -2,11 +2,10 @@
 
 class IEventHandler(object):
     """EventHandler Object Interface Definition"""
-    def __init__(self):
+    def __init__(self, interface_t, identifiers):
         self.info = {
-            'INTERFACE' : None,
-            'TARGET' : None,
-            'FOUND' : None
+            'INTERFACE' : interface_t,
+            'IDENTIFIERS' : identifiers
         }
 
     def register_event_hook(self):

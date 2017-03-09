@@ -9,14 +9,14 @@ from ..scripts.constants import *
 class WinEventHandler(IEventHandler):
     """Handle Windows Events"""
     # Store information about event used between callback and handler
-    INFO = {}
+    info = {}
+    event_found = None
 
     # Helper function to find matching accessible from EVENT_CONSOLE_START_APPLICATION
     @staticmethod
     def _match_criteria(acc_ptr, search_criteria, child_id=CHILDID_SELF):
         for criteria in search_criteria:
             prefix = 'acc'
-            print criteria
             prop_value = getattr(acc_ptr, prefix + criteria)(child_id)
             search_value = search_criteria[criteria]
 
@@ -39,11 +39,11 @@ class WinEventHandler(IEventHandler):
         if S_OK != result:
             return
 
-        _identifiers = WinEventHandler.INFO['TARGET']
+        _identifiers = WinEventHandler.info['IDENTIFIERS']
         if WinEventHandler._match_criteria(acc_ptr, _identifiers, idChild):
             windll.user32.PostQuitMessage(0x0012)
-            _interface = WinEventHandler.INFO['INTERFACE']
-            WinEventHandler.INFO['FOUND'] = {
+            _interface = WinEventHandler.info['INTERFACE']
+            WinEventHandler.event_found = {
                 'Child_Id' : idChild,
                 _interface : accessible(_interface, _identifiers).serialize(0)
             }
@@ -77,10 +77,9 @@ class WinEventHandler(IEventHandler):
         return hook_result
 
     def __init__(self, interface_t, event_t, _identifiers):
-        super(WinEventHandler, self).__init__()
-        self.info['INTERFACE'] = interface_t
-        self.info['TARGET'] = _identifiers
-        WinEventHandler.INFO = self.info
+        super(WinEventHandler, self).__init__(interface_t, _identifiers)
+        WinEventHandler.info = self.info
+        WinEventHandler.event_found = None
 
         self.hook = self.register_event_hook(event_t)
         self.listen_events()

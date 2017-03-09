@@ -60,12 +60,21 @@ def retrieve_event():
     _interface = request.args.get('interface')
     _event = request.args.get('event')
     _event_handler = event(_interface, _event, _identifiers)
-    event_result = _event_handler.info['FOUND']
+    event_result = _event_handler.event_found
 
     if event_result is not None:
         return jsonify(event_result), 200
     else:
-        return jsonify({'ERROR:': 'TIMEOUT'}), 404
+        _query_params = {
+            'Interface': _interface,
+            'Props': _identifiers,
+            'Event': _event
+        }
+        error = {
+            'Message' : "Event not found on Accessible",
+            'Query Params': _query_params
+        }
+        return jsonify({'ERROR': error}), 404
 
 @APP.route("/cmd")
 def retrieve_command():
@@ -91,14 +100,14 @@ def retrieve_command():
         return jsonify({_function : _value}), 200
     else:
         _query_params = {
-            'Function Params': _params,
+            'Interface': _interface,
+            'Props': _identifiers,
+            'Function': _function,
+            'Function Params': _params
         }
-        _query_params.update(_identifiers)
         error = {
-
             'Message' : "Function couldn't be executed with given parameters",
-            'Query Params': _query_params,
-            'Function': _function
+            'Query Params': _query_params
             }
         return jsonify({'ERROR': error}), 404
 
