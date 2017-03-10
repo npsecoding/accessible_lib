@@ -36,7 +36,7 @@ class IAccessible(NsIAccessible):
         custom_callable = {
             'accChildren': self.get_acc_children(self._target, child_tree, child_depth, True),
             'accParent': self.semantic_wrap(getattr(self._target, 'accParent')),
-            'accFocus' : self.semantic_wrap(getattr(self._target, 'accFocus'))
+            'accFocus' : self.get_acc_focus(self._target)
             # Localized role and state
             # 'accRole': localized_role(getattr(self._target, 'accRole')(CHILDID_SELF)),
             # 'accState': localized_state(getattr(self._target, 'accState')(CHILDID_SELF))
@@ -100,6 +100,16 @@ class IAccessible(NsIAccessible):
                     json[field] = "Attribute Not Supported"
 
         return json
+
+    def get_acc_focus(self, acc_ptr):
+        """Get focused object"""
+        focus_val = getattr(acc_ptr, 'accFocus')
+        if focus_val is None:
+            return None
+        elif isinstance(focus_val, int):
+            return self.semantic_wrap(acc_ptr.accChild(focus_val))
+        else:
+            return self.semantic_wrap(focus_val)
 
     def get_acc_children(self, acc_ptr, tree, child_depth, first):
         """Get child accessible"""
