@@ -2,21 +2,20 @@ from setuptools import setup, find_packages
 
 setup(
     name='Accessible_Lib',
-    version='0.0.1',
+    version='1.0.0',
     description='Wrappers around AT APIs',
     author='Nancy Pang',
     author_email='npang@mozila.com',
-    url='<GITHUB URL>',
+    url='https://github.com/npsecoding/accessible_lib.git',
     install_requires=[
         # dependencies
-        'flask',
-        'marshmallow'
+        'flask'
     ],
     tests_require=[
         # dependencies for unit testing
     ],
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
+    package_dir={'': 'accessible_lib'},
+    packages=find_packages('accessible_lib'),
     include_package_data=True,
     test_suite='tests',
 )
