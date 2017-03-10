@@ -1,10 +1,12 @@
 "Represent WINEVENTS"
 
 from ctypes import byref, wintypes, windll, oledll, POINTER, WINFUNCTYPE
+from comtypes.client import PumpEvents
 from comtypes.automation import VARIANT
 from ..scripts.accessible import accessible
 from ..events.IEventHandler import IEventHandler
 from ..scripts.constants import *
+from ..scripts.debug import DEBUG_ENABLED
 
 class WinEventHandler(IEventHandler):
     """Handle Windows Events"""
@@ -39,9 +41,11 @@ class WinEventHandler(IEventHandler):
         if S_OK != result:
             return
 
+        if DEBUG_ENABLED:
+            print acc_ptr.accName(idChild)
+
         _identifiers = WinEventHandler.info['IDENTIFIERS']
         if WinEventHandler._match_criteria(acc_ptr, _identifiers, idChild):
-            windll.user32.PostQuitMessage(0x0012)
             _interface = WinEventHandler.info['INTERFACE']
             WinEventHandler.event_found = {
                 'Child_Id' : idChild,
@@ -98,10 +102,5 @@ class WinEventHandler(IEventHandler):
 
     def listen_events(self):
         """Get registered events and trigger callback"""
-        timer_id = windll.user32.SetTimer(None, None, TIMEOUT, None)
-        msg = wintypes.MSG()
-        lpmsg = byref(msg)
-        windll.user32.GetMessageA(lpmsg, None, 0, 0)
-        windll.user32.KillTimer(None, timer_id)
-
+        PumpEvents(TIMEOUT)
         self.unregesiter_event_hook()
