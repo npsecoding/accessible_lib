@@ -82,6 +82,7 @@ class WinEventHandler(IEventHandler):
         WinEventHandler.event_found = None
 
         self.hook = self.register_event_hook(event_t)
+        print 'Registed ' + event_t + ' hook'
         self.listen_events()
 
     def register_event_hook(self, event):
