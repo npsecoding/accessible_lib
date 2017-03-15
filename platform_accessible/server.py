@@ -1,124 +1,61 @@
 """ Service requests for accessible objects """
 
-from flask import Flask, render_template, request, jsonify
+from BaseHTTPServer import BaseHTTPRequestHandler
+import re
+from urlparse import urlsplit, parse_qsl
+from SocketServer import TCPServer
+from threading import Thread
+from comtypes import CoInitialize
 from accessible_lib.scripts.accessible import accessible
-from accessible_lib.scripts.commands import execute_command
-from accessible_lib.scripts.event import event
 
-APP = Flask(__name__)
+class AccessibleRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if re.search('/accessible', self.path) != None:
+            params = dict(parse_qsl(urlsplit(self.path).query))
+            _name = params.get('name')
+            _role = params.get('role')
+            _interface = params.get('interface')
+            _depth = params.get('depth')
 
-@APP.route('/')
-def api_root():
-    """
-    Welcome page for Accessible Wrapper Service
-    """
-    return render_template('index.html')
+            _identifiers = {}
+            if _name is not None:
+                _identifiers["Name"] = _name
+            if _role is not None:
+                _identifiers["Role"] = _role
 
-@APP.route("/accessible")
-def retrieve_accessible():
-    """
-    Retrieve accessible through API with given ID
-    """
-    # Get id and depth paramaters
-    _name = request.args.get('name')
-    _role = request.args.get('role')
-    _identifiers = {}
-    if _name is not None:
-        _identifiers["Name"] = _name
-    if _role is not None:
-        _identifiers["Role"] = _role
+            _acc_obj = accessible(_interface, _identifiers)
 
-    _inteface = request.args.get('interface')
-    _depth = request.args.get('depth')
-    _acc_obj = accessible(_inteface, _identifiers)
+            if _acc_obj.found:
+                _json = _acc_obj.serialize(_depth)
 
-    # Display serialized object or error if not found
-    if _acc_obj.found:
-        _json = _acc_obj.serialize(_depth)
-        return jsonify({_inteface : _json}), 200
-    else:
-        error = {
-            'Message' : 'No accessible found with given parameters',
-            'Query Params': _identifiers
-            }
-        return jsonify({'ERROR': error}), 404
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write({_interface : _json})
+            else:
+                self.send_response(400, 'Bad Request: record does not exist')
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+        else:
+            self.send_response(403)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+        return
 
-@APP.route("/event")
-def retrieve_event():
-    """
-    Retrieve event associated with accessible
-    """
-    # Get id and event paramaters
-    _name = request.args.get('name')
-    _role = request.args.get('role')
-    _identifiers = {}
-    if _name is not None:
-        _identifiers["Name"] = _name
-    if _role is not None:
-        _identifiers["Role"] = _role
-
-    _interface = request.args.get('interface')
-    _event = request.args.get('event')
-    _event_handler = event(_interface, _event, _identifiers)
-    event_result = _event_handler.event_found
-
-    if event_result is not None:
-        return jsonify(event_result), 200
-    else:
-        _query_params = {
-            'Interface': _interface,
-            'Props': _identifiers,
-            'Event': _event
-        }
-        error = {
-            'Message' : "Event not found on Accessible",
-            'Query Params': _query_params
-        }
-        return jsonify({'ERROR': error}), 404
-
-@APP.route("/cmd")
-def retrieve_command():
-    """
-    Execute command on accessible
-    """
-    # Get id and function paramaters
-    _name = request.args.get('name')
-    _role = request.args.get('role')
-    _identifiers = {}
-    if _name is not None:
-        _identifiers["Name"] = _name
-    if _role is not None:
-        _identifiers["Role"] = _role
-
-    _interface = request.args.get('interface')
-    _function = request.args.get('function')
-    _params = request.args.getlist('param')
-    _value = execute_command(_interface, _identifiers, _function, _params)
-
-    # Display value returned from command or error
-    if _value is not "ERROR":
-        return jsonify({_function : _value}), 200
-    else:
-        _query_params = {
-            'Interface': _interface,
-            'Props': _identifiers,
-            'Function': _function,
-            'Function Params': _params
-        }
-        error = {
-            'Message' : "Function couldn't be executed with given parameters",
-            'Query Params': _query_params
-            }
-        return jsonify({'ERROR': error}), 404
+class AccessibleService:
+    def __init__(self, ip, port):
+        CoInitialize()
+        handler = AccessibleRequestHandler
+        self.server = TCPServer((ip, port), handler)
+        print '.............SERVICE RUNNING...............'
+        self.server.serve_forever()
 
 if __name__ == '__main__':
-    APP.run()
+    print '.............SETTING UP SERVICE............'
+    SERVER = AccessibleService("", 8000)
 
-#--------------------------------------------
-# FOR TESTING
-#--------------------------------------------
-# Retrieve the corresponding Accessible Object
-# ACC_OBJ = accessible('IAccessible', "Navigation Toolbar")
-# print ACC_OBJ.get_acc_name()
-# print ACC_OBJ.get_acc_role()
-# print ACC_OBJ.get_acc_value()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print '.............SERVICE STOPPED...........'
