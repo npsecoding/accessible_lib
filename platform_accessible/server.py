@@ -7,6 +7,8 @@ from SocketServer import TCPServer
 from threading import Thread
 from comtypes import CoInitialize
 from accessible_lib.scripts.accessible import accessible
+from accessible_lib.scripts.event import event
+from accessible_lib.scripts.commands import execute_command
 
 class AccessibleRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -33,11 +35,42 @@ class AccessibleRequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write({_interface : _json})
             else:
-                self.send_response(400, 'Bad Request: record does not exist')
+                self.send_response(400, 'Bad Request: Accessible does not exist')
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+
+        elif re.search('/event', self.path) != None:
+            params = dict(parse_qsl(urlsplit(self.path).query))
+            _name = params.get('name')
+            _role = params.get('role')
+            _interface = params.get('interface')
+            _event = params.get('type')
+
+            _identifiers = {}
+            if _name is not None:
+                _identifiers["Name"] = _name
+            if _role is not None:
+                _identifiers["Role"] = _role
+
+            if _event is None:
+                self.send_response(400, 'Bad Request: No event type specified')
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+
+            _event_handler = event(_interface, _event, _identifiers)
+            event_result = _event_handler.event_found
+
+            if event_result is not None:
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(event_result)
+            else:
+                self.send_response(400, 'Bad Request: No event occurred')
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
         else:
-            self.send_response(403)
+            self.send_response(403, 'Invalid Request')
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
         return
