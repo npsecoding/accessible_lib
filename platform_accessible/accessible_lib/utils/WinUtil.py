@@ -136,7 +136,7 @@ class WinUtil(IUtil):
         name = self._accessible_object_from_window(current_hwnd).accName(CHILDID_SELF)
 
         # Iterate through windows
-        while name is None or 'Nightly' not in name:
+        while name is None or 'Marionette Accessible' not in name:
             current_hwnd = windll.user32.FindWindowExA(None, current_hwnd, test_class, None)
             name = self._accessible_object_from_window(current_hwnd).accName(CHILDID_SELF)
 
