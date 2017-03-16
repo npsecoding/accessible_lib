@@ -7,13 +7,6 @@ from accessible_lib.scripts.event import event
 
 APP = Flask(__name__)
 
-@APP.route('/')
-def api_root():
-    """
-    Welcome page for Accessible Wrapper Service
-    """
-    return render_template('index.html')
-
 @APP.route("/accessible")
 def retrieve_accessible():
     """
