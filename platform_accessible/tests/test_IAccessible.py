@@ -20,7 +20,7 @@ CLIENT = Marionette(host='localhost', port=2828)
 CLIENT.start_session()
 CLIENT.navigate(TEST_HTML)
 
-EVENT_PARAMS = urllib.urlencode({'interface': 'IAccessible', 'name': 'MSAA Checkbox', 'event' : 'EVENT_OBJECT_STATECHANGE'})
+EVENT_PARAMS = urllib.urlencode({'interface': 'IAccessible', 'name': 'MSAA Checkbox', 'type' : 'EVENT_OBJECT_STATECHANGE'})
 EVENT_ENDPOINT = ENDPOINT_PREFIX + "/event?%s"
 CMD_PARAMS = urllib.urlencode({'interface': 'IAccessible', 'name': 'MSAA Checkbox', 'function': 'State'})
 CMD_ENPOINT = ENDPOINT_PREFIX + "/cmd?%s"

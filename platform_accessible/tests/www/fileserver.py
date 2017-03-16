@@ -5,10 +5,16 @@ import SimpleHTTPServer
 import SocketServer
 from threading import Thread
 
+DEBUG = False
+
 class FileServer(object):
     def __init__(self):
         self.port = 8000
-        directory = "www"
+        directory = 'www'
+
+        if DEBUG:
+            directory = "platform_accessible/tests/www"
+
         path = os.path.join(os.getcwd(), directory)
         os.chdir(path)
 

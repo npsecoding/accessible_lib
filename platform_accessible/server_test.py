@@ -114,11 +114,3 @@ def retrieve_command():
 if __name__ == '__main__':
     APP.run()
 
-#--------------------------------------------
-# FOR TESTING
-#--------------------------------------------
-# Retrieve the corresponding Accessible Object
-# ACC_OBJ = accessible('IAccessible', "Navigation Toolbar")
-# print ACC_OBJ.get_acc_name()
-# print ACC_OBJ.get_acc_role()
-# print ACC_OBJ.get_acc_value()

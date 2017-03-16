@@ -3,6 +3,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import re
 from urlparse import urlsplit, parse_qsl
+from json import dumps
 from SocketServer import TCPServer
 from comtypes import CoInitialize
 from accessible_lib.scripts.accessible import accessible
@@ -44,7 +45,7 @@ class AccessibleRequestHandler(BaseHTTPRequestHandler):
 
             if _acc_obj.found:
                 _json = _acc_obj.serialize(_depth)
-                self._successful_response({_interface : _json})
+                self._successful_response(dumps({_interface : _json}))
             else:
                 self._bad_response('Bad Request: Accessible does not exist')
 
@@ -56,12 +57,13 @@ class AccessibleRequestHandler(BaseHTTPRequestHandler):
 
             if _event is None:
                 self._bad_response('Bad Request: No event type specified')
+                return
 
             _event_handler = event(_interface, _event, _identifiers)
             event_result = _event_handler.event_found
 
             if event_result is not None:
-                self._successful_response(event_result)
+                self._successful_response(dumps(event_result))
             else:
                 self._bad_response('Bad Request: No event occurred')
 
@@ -84,11 +86,12 @@ class AccessibleRequestHandler(BaseHTTPRequestHandler):
 
             if _function is None:
                 self._bad_response('Bad Request: No command specified')
+                return
 
             _value = execute_command(_interface, _identifiers, _function, _function_params)
 
             if _value is not "ERROR":
-                self._successful_response(_value)
+                self._successful_response(dumps(_value))
             else:
                 self._bad_response('Bad Request: Command can not be executed on accessible')
         else:
@@ -107,7 +110,7 @@ class AccessibleService:
 
 if __name__ == '__main__':
     print '.............SETTING UP SERVICE............'
-    SERVER = AccessibleService("", 8000)
+    SERVER = AccessibleService("", 5000)
 
     try:
         while True:
