@@ -8,6 +8,8 @@ from ..events.IEventHandler import IEventHandler
 from ..scripts.constants import *
 from ..scripts.debug import DEBUG_ENABLED
 
+INVALID_EVENT = -1
+
 class WinEventHandler(IEventHandler):
     """Handle Windows Events"""
     # Store information about event used between callback and handler
@@ -87,13 +89,18 @@ class WinEventHandler(IEventHandler):
 
         self.hook = self.register_event_hook(event_t)
         print 'Registed ' + event_t + ' hook'
-        self.listen_events()
+        if self.hook != INVALID_EVENT:
+            self.listen_events()
 
     def register_event_hook(self, event):
         """Register callback for event type"""
-        event_index = WIN_EVENT_NAMES.values().index(event)
-        event_type = WIN_EVENT_NAMES.keys()[event_index]
-        return self.register_event(event_type, event_type)
+
+        if event in WIN_EVENT_NAMES.values():
+            event_index = WIN_EVENT_NAMES.values().index(event)
+            event_type = WIN_EVENT_NAMES.keys()[event_index]
+            return self.register_event(event_type, event_type)
+        else:
+            return INVALID_EVENT
 
     def unregesiter_event_hook(self):
         """Unregister callback for event type"""
