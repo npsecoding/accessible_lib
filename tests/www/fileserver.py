@@ -13,7 +13,7 @@ class FileServer(object):
         directory = 'www'
 
         if DEBUG:
-            directory = "platform_accessible/tests/www"
+            directory = "tests/www"
 
         path = os.path.join(os.getcwd(), directory)
         os.chdir(path)

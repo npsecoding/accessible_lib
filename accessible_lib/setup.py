@@ -9,7 +9,7 @@ setup(
     url='https://github.com/npsecoding/accessible_lib.git',
     install_requires=[
         # dependencies
-        'flask'
+        'comtypes'
     ],
     tests_require=[
         # dependencies for unit testing
